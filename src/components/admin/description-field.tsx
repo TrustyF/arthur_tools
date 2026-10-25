@@ -5,9 +5,10 @@ import { type ClipboardEvent, type DragEvent, useRef, useState } from "react";
 import { uploadMedia } from "@/server/actions/media-actions";
 import styles from "./form.module.sass";
 
-// Markdown alt text can't contain brackets.
+// Markdown alt text can't contain brackets; "|" is the size hint's separator
+// (lib/image-size.ts), left empty for the author to fill in.
 function markdownImage(url: string, alt: string): string {
-	return `![${alt.replace(/[[\]]/g, "")}](${url})`;
+	return `![${alt.replace(/[[\]|]/g, "")}|](${url})`;
 }
 
 export function DescriptionField({ defaultValue }: { defaultValue: string }) {
@@ -102,7 +103,7 @@ export function DescriptionField({ defaultValue }: { defaultValue: string }) {
 			/>
 			<span className={isError ? styles.error : styles.hint}>
 				{status ??
-					"Markdown. Paste or drop images and GIFs to upload them (up to 20 MB)."}
+					"Markdown. Paste or drop images and GIFs to upload them (up to 20 MB). Limit their size after the |: |400 (width), |x300 (height), |400x300."}
 			</span>
 		</div>
 	);

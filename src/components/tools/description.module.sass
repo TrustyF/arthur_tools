@@ -39,7 +39,10 @@
 
   img
     display: block
-    max-width: 100%
+    // Size hints from the alt text (description.tsx) set these.
+    max-width: min(100%, var(--max-width, 100%))
+    max-height: var(--max-height, none)
+    width: auto
     height: auto
     border: 1px solid var(--surface-border)
     border-radius: var(--radius)
