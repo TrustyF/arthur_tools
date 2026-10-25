@@ -26,6 +26,36 @@ export function ToolForm({ tool }: { tool?: Omit<Tool, "customIcon"> }) {
 		<form onSubmit={submitWithoutReset(action)} className={styles.form}>
 			{tool && <input type="hidden" name="id" value={tool.id} />}
 
+			<div className={styles.actions}>
+				<button type="submit" className={styles.primary} disabled={isPending}>
+					{isPending ? "Saving…" : tool ? "Save changes" : "Create tool"}
+				</button>
+				<Link href="/admin" className={styles.secondary}>
+					Cancel
+				</Link>
+				<label className={styles.checkbox}>
+					<input
+						type="checkbox"
+						name="isPublished"
+						defaultChecked={tool?.isPublished ?? false}
+					/>
+					Published
+				</label>
+				{tool && (
+					<button
+						type="button"
+						className={styles.danger}
+						onClick={() => {
+							if (!confirm(`Delete "${tool.name}"?`)) return;
+							startTransition(() => deleteTool(tool.id));
+						}}>
+						Delete
+					</button>
+				)}
+			</div>
+
+			{state?.error && <p className={styles.error}>{state.error}</p>}
+
 			<div className={styles.row}>
 				<label className={styles.field}>
 					Name
@@ -128,37 +158,6 @@ export function ToolForm({ tool }: { tool?: Omit<Tool, "customIcon"> }) {
 					required
 				/>
 			</label>
-
-			<label className={styles.checkbox}>
-				<input
-					type="checkbox"
-					name="isPublished"
-					defaultChecked={tool?.isPublished ?? false}
-				/>
-				Published
-			</label>
-
-			{state?.error && <p className={styles.error}>{state.error}</p>}
-
-			<div className={styles.actions}>
-				<button type="submit" className={styles.primary} disabled={isPending}>
-					{isPending ? "Saving…" : tool ? "Save changes" : "Create tool"}
-				</button>
-				<Link href="/admin" className={styles.secondary}>
-					Cancel
-				</Link>
-				{tool && (
-					<button
-						type="button"
-						className={styles.danger}
-						onClick={() => {
-							if (!confirm(`Delete "${tool.name}"?`)) return;
-							startTransition(() => deleteTool(tool.id));
-						}}>
-						Delete
-					</button>
-				)}
-			</div>
 		</form>
 	);
 }
