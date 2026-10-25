@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { type KeyboardEvent, useState } from "react";
+import { type KeyboardEvent, useRef, useState } from "react";
 import { HOUDINI_ICON_MANIFEST_URL, houdiniIconSrc } from "@/lib/tool-icon";
 import styles from "./houdini-icon-picker.module.sass";
 
@@ -36,8 +36,17 @@ export function HoudiniIconPicker({ defaultValue }: { defaultValue: string }) {
 		setManifest(res.ok ? ((await res.json()) as string[]) : "missing");
 	}
 
-	function choose(name: string) {
+	const inputRef = useRef<HTMLInputElement>(null);
+
+	// The hidden input changes through state, which fires no input event; tell
+	// the form, so tool-form.tsx's draft autosave picks the change up.
+	function update(name: string) {
 		setValue(name);
+		inputRef.current?.dispatchEvent(new Event("input", { bubbles: true }));
+	}
+
+	function choose(name: string) {
+		update(name);
 		setIsOpen(false);
 	}
 
@@ -48,7 +57,7 @@ export function HoudiniIconPicker({ defaultValue }: { defaultValue: string }) {
 
 	return (
 		<div className={styles.picker}>
-			<input type="hidden" name="houdiniIcon" value={value} />
+			<input ref={inputRef} type="hidden" name="houdiniIcon" value={value} />
 			<div className={styles.current}>
 				{value ? (
 					<>
@@ -62,7 +71,7 @@ export function HoudiniIconPicker({ defaultValue }: { defaultValue: string }) {
 					{isOpen ? "Close" : "Choose…"}
 				</button>
 				{value && (
-					<button type="button" onClick={() => setValue("")}>
+					<button type="button" onClick={() => update("")}>
 						Clear
 					</button>
 				)}

@@ -13,7 +13,9 @@ import {
 	processIcon,
 } from "@/server/images/process-icon";
 
-export type ToolFormState = { error: string } | undefined;
+// A successful save returns where to go rather than calling redirect(), so the
+// form can clear its local draft first and only then navigate.
+export type ToolFormState = { error: string } | { savedTo: string } | undefined;
 
 const MAX_NOTE_LENGTH = 200;
 
@@ -120,7 +122,11 @@ export async function saveTool(
 		) {
 			return { error: `The slug "${parsed.slug}" is already taken.` };
 		}
-		throw err;
+		// Anything else is unexpected: report it on the form instead of replacing
+		// the page with Next's error screen (the draft survives either way).
+		console.error("saveTool failed", err);
+		const reason = err instanceof Error ? err.message : String(err);
+		return { error: `Couldn't save the tool: ${reason}` };
 	}
 
 	revalidatePath("/");
@@ -128,11 +134,13 @@ export async function saveTool(
 	// Back to where Edit was clicked; if that was this tool's own page, follow a
 	// renamed slug, and fall back to the admin list if it's no longer public.
 	if (previousSlug && returnTo === `/tools/${previousSlug}`) {
-		redirect(
-			parsed.isPublished ? `/tools/${parsed.slug}` : DEFAULT_RETURN_PATH,
-		);
+		return {
+			savedTo: parsed.isPublished
+				? `/tools/${parsed.slug}`
+				: DEFAULT_RETURN_PATH,
+		};
 	}
-	redirect(returnTo);
+	return { savedTo: returnTo };
 }
 
 export async function deleteTool(id: string, returnTo?: string): Promise<void> {

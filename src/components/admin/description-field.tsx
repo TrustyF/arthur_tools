@@ -46,6 +46,8 @@ export function DescriptionField({ defaultValue }: { defaultValue: string }) {
 		const el = textareaRef.current;
 		if (!el) return;
 		el.setRangeText(text, el.selectionStart, el.selectionEnd, "end");
+		// setRangeText fires no input event; the form's draft autosave needs one.
+		el.dispatchEvent(new Event("input", { bubbles: true }));
 		el.focus();
 	}
 

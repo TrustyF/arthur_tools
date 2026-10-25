@@ -27,7 +27,9 @@ async function main() {
 
 	// Keys rather than URLs, so a change of CDN domain doesn't orphan everything.
 	const descriptions = tools.map((tool) => tool.description).join("\n");
-	const orphans = candidates.filter((media) => !descriptions.includes(media.key));
+	const orphans = candidates.filter(
+		(media) => !descriptions.includes(media.key),
+	);
 
 	console.log(
 		`${candidates.length} images older than ${GRACE_HOURS}h, ${orphans.length} unused` +

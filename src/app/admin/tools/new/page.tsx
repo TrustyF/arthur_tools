@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ToolForm } from "@/components/admin/tool-form";
+import { ToolFormLoader } from "@/components/admin/tool-form-loader";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import styles from "../../admin.module.sass";
 
@@ -10,7 +10,7 @@ export default async function NewToolPage() {
 	return (
 		<>
 			<h1 className={styles.title}>New tool</h1>
-			<ToolForm />
+			<ToolFormLoader />
 		</>
 	);
 }

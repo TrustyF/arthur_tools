@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ToolForm } from "@/components/admin/tool-form";
+import { ToolFormLoader } from "@/components/admin/tool-form-loader";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { safeReturnPath } from "@/lib/return-to";
 import { db } from "@/server/db/client";
@@ -22,7 +22,10 @@ export default async function EditToolPage(
 	return (
 		<>
 			<h1 className={styles.title}>Edit {tool.name}</h1>
-			<ToolForm tool={tool} returnTo={safeReturnPath(searchParams.from)} />
+			<ToolFormLoader
+				tool={tool}
+				returnTo={safeReturnPath(searchParams.from)}
+			/>
 		</>
 	);
 }

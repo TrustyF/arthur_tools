@@ -78,7 +78,10 @@ class R2MediaStorage implements MediaStorage {
 
 	async remove(key: string): Promise<void> {
 		await this.getClient().send(
-			new DeleteObjectCommand({ Bucket: requireEnv("R2_BUCKET_NAME"), Key: key }),
+			new DeleteObjectCommand({
+				Bucket: requireEnv("R2_BUCKET_NAME"),
+				Key: key,
+			}),
 		);
 	}
 }
