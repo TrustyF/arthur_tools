@@ -1,4 +1,4 @@
-import { LANGUAGE_EXTENSION } from "@/lib/tool-language";
+import { toolFileName } from "@/lib/tool-language";
 import { db } from "@/server/db/client";
 import { recordToolStat, shouldCount } from "@/server/tools/tool-stats";
 
@@ -12,7 +12,7 @@ export async function GET(
 
 	if (await shouldCount(req)) await recordToolStat(tool.id, "downloads");
 
-	const fileName = `${tool.slug}.${LANGUAGE_EXTENSION[tool.language]}`;
+	const fileName = toolFileName(tool.slug, tool.language);
 	return new Response(tool.code, {
 		headers: {
 			"Content-Type": "text/plain; charset=utf-8",

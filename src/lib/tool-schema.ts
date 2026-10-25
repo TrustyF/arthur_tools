@@ -21,6 +21,7 @@ export const toolInput = type({
 	houdiniIcon,
 	tags: "string[]",
 	isPublished: "boolean",
+	isPinned: "boolean",
 });
 
 export type ToolInput = typeof toolInput.infer;
@@ -59,5 +60,6 @@ export function toolFromFormData(formData: FormData): unknown {
 			),
 		],
 		isPublished: formData.get("isPublished") === "on",
+		isPinned: formData.get("isPinned") === "on",
 	};
 }

@@ -52,6 +52,14 @@ export function ToolForm({ tool, returnTo }: ToolFormProps) {
 					/>
 					Published
 				</label>
+				<label className={styles.checkbox}>
+					<input
+						type="checkbox"
+						name="isPinned"
+						defaultChecked={tool?.isPinned ?? false}
+					/>
+					Pinned
+				</label>
 				{tool && (
 					<button
 						type="button"

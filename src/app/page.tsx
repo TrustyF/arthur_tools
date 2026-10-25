@@ -32,16 +32,17 @@ export default async function Home(props: PageProps<"/">) {
 	const isAdmin = session?.user?.role === "ADMIN";
 	const tools = await db.tool.findMany({
 		where,
-		orderBy: { updateDate: "desc" },
+		// Pinned first (true sorts after false, hence desc), then most recently updated.
+		orderBy: [{ isPinned: "desc" }, { updateDate: "desc" }],
 		select: {
 			id: true,
 			slug: true,
 			name: true,
 			summary: true,
-			context: true,
 			tags: true,
 			houdiniIcon: true,
 			customIconDate: true,
+			isPinned: true,
 			stats: { select: { downloads: true } },
 		},
 	});

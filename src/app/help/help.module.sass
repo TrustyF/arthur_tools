@@ -1,0 +1,74 @@
+@use "../styles/variables" as *
+
+.page
+  max-width: 42rem
+  line-height: 1.65
+
+  h1
+    font-size: 1.75rem
+
+  h2
+    font-size: 1.3rem
+    margin: 2.25rem 0 0.25rem
+    padding-bottom: 0.4rem
+    border-bottom: 1px solid var(--surface-border)
+
+  h3
+    font-size: 1rem
+    margin: 1.25rem 0 0.3rem
+
+  p + p, p + pre, pre + p
+    margin-top: 0.6rem
+
+  ol
+    padding-left: 1.4rem
+
+    li + li
+      margin-top: 0.4rem
+
+  a
+    color: var(--link)
+
+    &:hover
+      text-decoration: underline
+
+  code
+    font-family: $font-mono
+    font-size: 0.85em
+    padding: 0.1rem 0.35rem
+    border-radius: 4px
+    background: var(--surface)
+
+  pre
+    margin-top: 0.4rem
+    padding: 0.65rem 0.9rem
+    font-family: $font-mono
+    font-size: 0.85rem
+    background: var(--code-bg)
+    border: 1px solid var(--surface-border)
+    border-radius: var(--radius)
+    overflow-x: auto
+
+  // Section ids are jump targets; keep headings clear of the top edge.
+  section
+    scroll-margin-top: 1.5rem
+
+.lead
+  margin-top: 0.5rem
+  color: var(--accent3)
+
+// Houdini menu items, buttons and tabs, so they stand out from the prose.
+.ui
+  font-weight: 600
+  color: var(--foreground)
+
+.table
+  margin-top: 0.6rem
+  border-collapse: collapse
+  font-size: 0.9rem
+
+  th
+    padding: 0.3rem 1.5rem 0.3rem 0
+    text-align: left
+    font-weight: 500
+    color: var(--accent3)

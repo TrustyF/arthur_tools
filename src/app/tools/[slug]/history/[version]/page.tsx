@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DiffView } from "@/components/tools/diff-view";
-import { LANGUAGE_EXTENSION, LANGUAGE_HIGHLIGHT_ID } from "@/lib/tool-language";
+import { toolFileName, LANGUAGE_HIGHLIGHT_ID } from "@/lib/tool-language";
 import { formatVersionDate, getToolHistory } from "@/server/tools/tool-history";
 import styles from "../history.module.sass";
 
@@ -73,7 +73,7 @@ export default async function VersionPage(
 				oldCode={previous?.code ?? ""}
 				newCode={current.code}
 				lang={LANGUAGE_HIGHLIGHT_ID[tool.language]}
-				fileName={`${tool.slug}.${LANGUAGE_EXTENSION[tool.language]}`}
+				fileName={toolFileName(tool.slug, tool.language)}
 			/>
 		</div>
 	);

@@ -30,6 +30,8 @@ model Tool {
   tags        String[]     @default([])
   // Drafts are only visible under /admin.
   isPublished Boolean      @default(false)
+  // Pinned tools list first (home page and admin list), then by updateDate.
+  isPinned    Boolean      @default(false)
 
   createDate DateTime @default(now())
   updateDate DateTime @updatedAt

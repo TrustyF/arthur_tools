@@ -46,3 +46,6 @@ next-env.d.ts
 # data/houdini-icons.pack: SideFX's icon set, packed from a local Houdini install
 # by `npm run import_houdini_icons` (SideFX's artwork, so not committed).
 /data/
+
+# Database dumps (e.g. on thinkguy, taken before deploys that run migrations)
+/backups/

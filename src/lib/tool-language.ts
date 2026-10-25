@@ -22,6 +22,19 @@ export const LANGUAGE_EXTENSION: Record<ToolLanguage, string> = {
 	VEX: "vfl",
 };
 
+// Download/display name. Python files use underscores so the name is importable:
+// /help has shelf tools run them with runpy.run_module("padded_netbox").
+export function toolFileName(slug: string, language: ToolLanguage): string {
+	const base = language === "PYTHON" ? slug.replaceAll("-", "_") : slug;
+	return `${base}.${LANGUAGE_EXTENSION[language]}`;
+}
+
+// The /help section explaining how to use each kind of tool (section ids in app/help).
+export const HELP_ANCHOR: Record<ToolLanguage, string> = {
+	PYTHON: "/help#python",
+	VEX: "/help#vex",
+};
+
 export function parseLanguage(value: unknown): ToolLanguage | undefined {
 	return TOOL_LANGUAGES.find((lang) => lang === value);
 }

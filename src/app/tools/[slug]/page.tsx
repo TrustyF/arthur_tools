@@ -1,4 +1,4 @@
-import { Pencil } from "lucide-react";
+import { CircleHelp, Pencil } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -10,7 +10,11 @@ import { Description } from "@/components/tools/description";
 import { LanguageBadge } from "@/components/tools/language-badge";
 import { ToolIcon } from "@/components/tools/tool-icon";
 import { ViewTracker } from "@/components/tools/view-tracker";
-import { LANGUAGE_EXTENSION, LANGUAGE_HIGHLIGHT_ID } from "@/lib/tool-language";
+import {
+	HELP_ANCHOR,
+	toolFileName,
+	LANGUAGE_HIGHLIGHT_ID,
+} from "@/lib/tool-language";
 import { db } from "@/server/db/client";
 import styles from "./tool.module.sass";
 
@@ -37,7 +41,7 @@ export default async function ToolPage(props: PageProps<"/tools/[slug]">) {
 	if (!tool) notFound();
 	const isAdmin = session?.user?.role === "ADMIN";
 
-	const fileName = `${tool.slug}.${LANGUAGE_EXTENSION[tool.language]}`;
+	const fileName = toolFileName(tool.slug, tool.language);
 	const eventsUrl = `/api/tools/${tool.slug}/events`;
 
 	return (
@@ -70,6 +74,15 @@ export default async function ToolPage(props: PageProps<"/tools/[slug]">) {
 							<dd>{tool.houdiniVersion}+</dd>
 						</div>
 					)}
+					{/* What to type in a shelf tool's Icon field (see /help#python). */}
+					{tool.language === "PYTHON" && tool.houdiniIcon && (
+						<div>
+							<dt>Shelf icon</dt>
+							<dd>
+								<code className={styles.iconName}>{tool.houdiniIcon}</code>
+							</dd>
+						</div>
+					)}
 					<div>
 						<dt>Updated</dt>
 						<dd>{tool.updateDate.toISOString().slice(0, 10)}</dd>
@@ -100,13 +113,21 @@ export default async function ToolPage(props: PageProps<"/tools/[slug]">) {
 
 			{tool.description && <Description markdown={tool.description} />}
 
-			<CodeBlock
-				code={tool.code}
-				lang={LANGUAGE_HIGHLIGHT_ID[tool.language]}
-				fileName={fileName}
-				downloadHref={`/tools/${tool.slug}/raw`}
-				eventsUrl={eventsUrl}
-			/>
+			<div className={styles.code}>
+				<Link href={HELP_ANCHOR[tool.language]} className={styles.howTo}>
+					<CircleHelp size={14} />
+					{tool.language === "PYTHON"
+						? "How to add this to a shelf"
+						: "How to use this in a wrangle"}
+				</Link>
+				<CodeBlock
+					code={tool.code}
+					lang={LANGUAGE_HIGHLIGHT_ID[tool.language]}
+					fileName={fileName}
+					downloadHref={`/tools/${tool.slug}/raw`}
+					eventsUrl={eventsUrl}
+				/>
+			</div>
 			<ViewTracker eventsUrl={eventsUrl} />
 		</article>
 	);

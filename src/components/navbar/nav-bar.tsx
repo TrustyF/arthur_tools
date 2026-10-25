@@ -15,6 +15,7 @@ export default async function NavBar() {
 				<div className={styles.links}>
 					<Link href="/?lang=PYTHON">Python</Link>
 					<Link href="/?lang=VEX">VEX</Link>
+					<Link href="/help">Help</Link>
 					{isAdmin && <Link href="/admin">Admin</Link>}
 					{session && (
 						<form

@@ -1,5 +1,5 @@
 import type { Tool } from "@prisma/client";
-import { Download, Pencil } from "lucide-react";
+import { Download, Heart, Pencil } from "lucide-react";
 import Link from "next/link";
 import styles from "./tool-card.module.sass";
 import { ToolIcon } from "./tool-icon";
@@ -10,10 +10,10 @@ type ToolCardProps = {
 		| "slug"
 		| "name"
 		| "summary"
-		| "context"
 		| "tags"
 		| "houdiniIcon"
 		| "customIconDate"
+		| "isPinned"
 	>;
 	// Download and Copy button uses combined (ToolStats.downloads).
 	downloads: number;
@@ -33,6 +33,14 @@ export function ToolCard({ tool, downloads, editHref }: ToolCardProps) {
 						{tool.name}
 					</Link>
 				</h2>
+				{tool.isPinned && (
+					<Heart
+						size={14}
+						fill="currentColor"
+						className={styles.pin}
+						aria-label="Pinned"
+					/>
+				)}
 			</div>
 			{editHref && (
 				<Link
@@ -46,7 +54,6 @@ export function ToolCard({ tool, downloads, editHref }: ToolCardProps) {
 			{tool.summary && <p className={styles.summary}>{tool.summary}</p>}
 			<div className={styles.footer}>
 				<div className={styles.meta}>
-					{tool.context && <span>{tool.context}</span>}
 					{tool.tags.map((tag) => (
 						<span key={tag} className={styles.tag}>
 							#{tag}

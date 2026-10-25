@@ -1,3 +1,5 @@
+@use "../../styles/variables" as *
+
 .page
   display: flex
   flex-direction: column
@@ -46,6 +48,27 @@
 
   a:hover
     color: var(--brand-hover)
+
+.iconName
+  font-family: $font-mono
+  font-size: 0.85em
+
+// The help link sits just above the code block, right-aligned.
+.code
+  display: flex
+  flex-direction: column
+  gap: 0.5rem
+
+.howTo
+  display: inline-flex
+  align-items: center
+  gap: 0.35rem
+  align-self: flex-end
+  font-size: 0.8rem
+  color: var(--link)
+
+  &:hover
+    text-decoration: underline
 
 // Admins only; pushed to the far right of the title row.
 .edit

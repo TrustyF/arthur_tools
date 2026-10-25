@@ -1,3 +1,4 @@
+import { Heart } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LanguageBadge } from "@/components/tools/language-badge";
@@ -11,13 +12,15 @@ export const metadata: Metadata = { title: "Admin" };
 export default async function AdminPage() {
 	await requireAdmin();
 	const tools = await db.tool.findMany({
-		orderBy: { updateDate: "desc" },
+		// Pinned first (true sorts after false, hence desc), then most recently updated.
+		orderBy: [{ isPinned: "desc" }, { updateDate: "desc" }],
 		select: {
 			id: true,
 			slug: true,
 			name: true,
 			language: true,
 			isPublished: true,
+			isPinned: true,
 			updateDate: true,
 			houdiniIcon: true,
 			customIconDate: true,
@@ -61,6 +64,14 @@ export default async function AdminPage() {
 										className={styles.nameCell}>
 										<ToolIcon tool={tool} size={20} />
 										{tool.name}
+										{tool.isPinned && (
+											<Heart
+												fill="currentColor"
+												size={13}
+												className={styles.pin}
+												aria-label="Pinned"
+											/>
+										)}
 									</Link>
 								</td>
 								<td>
