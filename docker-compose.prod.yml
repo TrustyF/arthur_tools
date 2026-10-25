@@ -1,0 +1,45 @@
+# Self-hosting on thinkguy behind a Cloudflare Tunnel. Layered over
+# docker-compose.yml; on the server set in .env:
+#   COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml
+#   CLOUDFLARE_TUNNEL_TOKEN=...   (Cloudflare dashboard: Networking > Tunnels; public
+#                                  hostname tools.arthursirjacobs.com -> http://app:3000)
+#   WEB_PORT=3004  DB_PORT=5435   (thinkguy's other stacks hold 3000-3003, 5432-5434)
+# then scripts/deploy.sh. Cloudflare terminates HTTPS.
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN:?set CLOUDFLARE_TUNNEL_TOKEN in .env}
+    depends_on:
+      app:
+        condition: service_healthy
+
+  app:
+    depends_on:
+      firewall-init:
+        condition: service_completed_successfully
+
+  # Applies the DOCKER-USER iptables rules that stop this project's network from
+  # reaching the LAN / other Docker networks (see scripts/docker-user-lan-isolation.sh).
+  # Host-level chain, hence network_mode: host + NET_ADMIN. Exits after applying.
+  firewall-init:
+    image: alpine:3.20
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+    environment:
+      SUBNET: ${DOCKER_SUBNET:-172.23.0.0/16}
+    volumes:
+      - ./scripts/docker-user-lan-isolation.sh:/docker-user-lan-isolation.sh:ro
+    entrypoint:
+      ["sh", "-c", "apk add --no-cache iptables >/dev/null && sh /docker-user-lan-isolation.sh"]
+    restart: "no"
+
+# Pinned so the firewall rules can't drift from the subnet Docker would pick.
+# Taken on thinkguy: .17 bridge, .18 portainer, .19 review-website, .20 analytics,
+# .21 ygo_next, .22 homepage.
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: ${DOCKER_SUBNET:-172.23.0.0/16}

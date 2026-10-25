@@ -15,6 +15,13 @@ COPY prisma.config.ts ./
 # too), so it must resolve even though generate never connects.
 RUN DATABASE_URL="postgresql://build:build@localhost:5432/build" npm ci
 
+# Full node_modules + source, for one-off commands rather than serving:
+# `migrate` in docker-compose.yml, and `docker compose run --rm migrate npm run create_admin ...`.
+FROM base AS tools
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules

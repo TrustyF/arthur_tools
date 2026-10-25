@@ -1,3 +1,5 @@
+# Local dev only needs the database (`npm run compose` starts just `db`).
+# The full stack runs on thinkguy with docker-compose.prod.yml layered on top.
 services:
   db:
     image: postgres:17.11
@@ -8,7 +10,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-arthur_tools}
     # 5433 on the host so it doesn't collide with review_website_nextjs's db.
     ports:
-      - "127.0.0.1:5433:5432"
+      - "127.0.0.1:${DB_PORT:-5433}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -20,6 +22,53 @@ services:
       interval: 3s
       timeout: 3s
       retries: 10
+
+  # Applies Prisma migrations, then exits. `app` waits for it. Also the image
+  # for one-off commands: docker compose run --rm migrate npm run create_admin -- <user> <password>
+  migrate:
+    build:
+      context: .
+      target: tools
+    command: npm run migrate_deploy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-arthur_tools}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  app:
+    build:
+      context: .
+      target: runner
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${WEB_PORT:-3000}:3000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-arthur_tools}
+      AUTH_SECRET: ${AUTH_SECRET:?set AUTH_SECRET in .env}
+      AUTH_TRUST_HOST: "true"
+      AUTH_URL: ${SITE_URL:-http://localhost:3000}
+      SITE_URL: ${SITE_URL:-http://localhost:3000}
+    volumes:
+      # Not in git or the image (SideFX's artwork); copied to the host separately.
+      # Read-only: the app only serves them.
+      - ./public/houdini-icons:/app/public/houdini-icons:ro
+    healthcheck:
+      # node:22-slim has no curl/wget.
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
 
 volumes:
   pgdata:
