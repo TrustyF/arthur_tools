@@ -1,17 +1,25 @@
+import { Pencil } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
+import { auth } from "@/auth";
+import { editHref } from "@/lib/return-to";
 import { CodeBlock } from "@/components/tools/code-block";
+import { Description } from "@/components/tools/description";
 import { LanguageBadge } from "@/components/tools/language-badge";
 import { ToolIcon } from "@/components/tools/tool-icon";
+import { ViewTracker } from "@/components/tools/view-tracker";
 import { LANGUAGE_EXTENSION, LANGUAGE_HIGHLIGHT_ID } from "@/lib/tool-language";
 import { db } from "@/server/db/client";
 import styles from "./tool.module.sass";
 
 // Shared by generateMetadata and the page so the row is fetched once per request.
 const getTool = cache((slug: string) =>
-	db.tool.findFirst({ where: { slug, isPublished: true } }),
+	db.tool.findFirst({
+		where: { slug, isPublished: true },
+		include: { _count: { select: { versions: true } } },
+	}),
 );
 
 export async function generateMetadata(
@@ -25,10 +33,12 @@ export async function generateMetadata(
 
 export default async function ToolPage(props: PageProps<"/tools/[slug]">) {
 	const { slug } = await props.params;
-	const tool = await getTool(slug);
+	const [tool, session] = await Promise.all([getTool(slug), auth()]);
 	if (!tool) notFound();
+	const isAdmin = session?.user?.role === "ADMIN";
 
 	const fileName = `${tool.slug}.${LANGUAGE_EXTENSION[tool.language]}`;
+	const eventsUrl = `/api/tools/${tool.slug}/events`;
 
 	return (
 		<article className={styles.page}>
@@ -37,6 +47,14 @@ export default async function ToolPage(props: PageProps<"/tools/[slug]">) {
 					<ToolIcon tool={tool} size={36} />
 					<h1>{tool.name}</h1>
 					<LanguageBadge language={tool.language} />
+					{isAdmin && (
+						<Link
+							href={editHref(tool.id, `/tools/${tool.slug}`)}
+							className={styles.edit}>
+							<Pencil size={14} />
+							Edit
+						</Link>
+					)}
 				</div>
 				{tool.summary && <p className={styles.summary}>{tool.summary}</p>}
 				<dl className={styles.meta}>
@@ -56,6 +74,18 @@ export default async function ToolPage(props: PageProps<"/tools/[slug]">) {
 						<dt>Updated</dt>
 						<dd>{tool.updateDate.toISOString().slice(0, 10)}</dd>
 					</div>
+					<div>
+						<dt>History</dt>
+						<dd>
+							<Link
+								href={`/tools/${tool.slug}/history`}
+								className={styles.link}>
+								{tool._count.versions === 1
+									? "1 version"
+									: `${tool._count.versions} versions`}
+							</Link>
+						</dd>
+					</div>
 				</dl>
 				{tool.tags.length > 0 && (
 					<div className={styles.tags}>
@@ -68,16 +98,16 @@ export default async function ToolPage(props: PageProps<"/tools/[slug]">) {
 				)}
 			</header>
 
-			{tool.description && (
-				<p className={styles.description}>{tool.description}</p>
-			)}
+			{tool.description && <Description markdown={tool.description} />}
 
 			<CodeBlock
 				code={tool.code}
 				lang={LANGUAGE_HIGHLIGHT_ID[tool.language]}
 				fileName={fileName}
 				downloadHref={`/tools/${tool.slug}/raw`}
+				eventsUrl={eventsUrl}
 			/>
+			<ViewTracker eventsUrl={eventsUrl} />
 		</article>
 	);
 }

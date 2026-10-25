@@ -31,6 +31,12 @@
     text-transform: uppercase
     letter-spacing: 0.04em
 
+.link
+  color: var(--link)
+
+  &:hover
+    text-decoration: underline
+
 .tags
   display: flex
   flex-wrap: wrap
@@ -41,6 +47,18 @@
   a:hover
     color: var(--brand-hover)
 
-.description
-  white-space: pre-line
-  line-height: 1.6
+// Admins only; pushed to the far right of the title row.
+.edit
+  display: inline-flex
+  align-items: center
+  gap: 0.35rem
+  margin-left: auto
+  padding: 0.3rem 0.7rem
+  font-size: 0.8rem
+  border: 1px solid var(--surface-border)
+  border-radius: var(--radius)
+  color: var(--accent3)
+
+  &:hover
+    color: var(--foreground)
+    border-color: var(--accent1)

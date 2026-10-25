@@ -3,10 +3,12 @@
 import type { Tool } from "@prisma/client";
 import Link from "next/link";
 import { type KeyboardEvent, startTransition, useActionState } from "react";
+import { DEFAULT_RETURN_PATH } from "@/lib/return-to";
 import { submitWithoutReset } from "@/lib/submit-without-reset";
 import { LANGUAGE_LABEL, TOOL_LANGUAGES } from "@/lib/tool-language";
 import { deleteTool, saveTool } from "@/server/actions/tool-actions";
 import { CustomIconField } from "./custom-icon-field";
+import { DescriptionField } from "./description-field";
 import styles from "./form.module.sass";
 import { HoudiniIconPicker } from "./houdini-icon-picker";
 
@@ -19,18 +21,27 @@ function insertTab(event: KeyboardEvent<HTMLTextAreaElement>) {
 }
 
 // customIcon's bytes are omitted by the db client; the form only needs customIconDate.
-export function ToolForm({ tool }: { tool?: Omit<Tool, "customIcon"> }) {
+type ToolFormProps = {
+	tool?: Omit<Tool, "customIcon">;
+	// Where save, cancel and delete lead; see lib/return-to.ts.
+	returnTo?: string | undefined;
+};
+
+export function ToolForm({ tool, returnTo }: ToolFormProps) {
 	const [state, action, isPending] = useActionState(saveTool, undefined);
 
 	return (
 		<form onSubmit={submitWithoutReset(action)} className={styles.form}>
 			{tool && <input type="hidden" name="id" value={tool.id} />}
+			{returnTo && <input type="hidden" name="returnTo" value={returnTo} />}
 
 			<div className={styles.actions}>
 				<button type="submit" className={styles.primary} disabled={isPending}>
 					{isPending ? "Saving…" : tool ? "Save changes" : "Create tool"}
 				</button>
-				<Link href="/admin" className={styles.secondary}>
+				<Link
+					href={returnTo ?? DEFAULT_RETURN_PATH}
+					className={styles.secondary}>
 					Cancel
 				</Link>
 				<label className={styles.checkbox}>
@@ -47,7 +58,7 @@ export function ToolForm({ tool }: { tool?: Omit<Tool, "customIcon"> }) {
 						className={styles.danger}
 						onClick={() => {
 							if (!confirm(`Delete "${tool.name}"?`)) return;
-							startTransition(() => deleteTool(tool.id));
+							startTransition(() => deleteTool(tool.id, returnTo));
 						}}>
 						Delete
 					</button>
@@ -55,6 +66,18 @@ export function ToolForm({ tool }: { tool?: Omit<Tool, "customIcon"> }) {
 			</div>
 
 			{state?.error && <p className={styles.error}>{state.error}</p>}
+
+			<label className={styles.field}>
+				Change note
+				<input
+					name="changeNote"
+					maxLength={200}
+					placeholder={tool ? "What changed in the code?" : "Initial version"}
+				/>
+				<span className={styles.hint}>
+					Saved with a new version in the history whenever the code changes.
+				</span>
+			</label>
 
 			<div className={styles.row}>
 				<label className={styles.field}>
@@ -138,14 +161,7 @@ export function ToolForm({ tool }: { tool?: Omit<Tool, "customIcon"> }) {
 				<span className={styles.hint}>Comma-separated</span>
 			</label>
 
-			<label className={styles.field}>
-				Description
-				<textarea
-					name="description"
-					rows={5}
-					defaultValue={tool?.description}
-				/>
-			</label>
+			<DescriptionField defaultValue={tool?.description ?? ""} />
 
 			<label className={styles.field}>
 				Code

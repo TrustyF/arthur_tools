@@ -1,0 +1,105 @@
+@use "../../../styles/variables" as *
+
+.page
+  display: flex
+  flex-direction: column
+  gap: 1.25rem
+
+  h1
+    font-size: 1.5rem
+
+.back
+  font-size: 0.85rem
+  color: var(--accent3)
+
+  &:hover
+    color: var(--foreground)
+
+.list
+  list-style: none
+  border: 1px solid var(--surface-border)
+  border-radius: var(--radius)
+  overflow: hidden
+
+  li + li
+    border-top: 1px solid var(--surface-border)
+
+.row
+  display: grid
+  grid-template-columns: 3rem 1fr auto auto
+  align-items: center
+  gap: 1rem
+  padding: 0.75rem 1rem
+  background: var(--surface)
+
+  &:hover
+    background: color-mix(in srgb, var(--surface) 90%, var(--foreground))
+
+  @media (max-width: $mobile-breakpoint)
+    grid-template-columns: 3rem 1fr auto
+
+    .date
+      display: none
+
+.version
+  font-family: $font-mono
+  font-weight: 600
+  color: var(--foreground)
+
+.note
+  display: flex
+  align-items: center
+  gap: 0.5rem
+  color: var(--body)
+  min-width: 0
+
+.noNote
+  color: var(--accent1)
+
+.current
+  padding: 0.05rem 0.45rem
+  border: 1px solid var(--brand)
+  border-radius: 999px
+  font-size: 0.7rem
+  color: var(--brand)
+
+.stats
+  display: flex
+  gap: 0.5rem
+  font-family: $font-mono
+  font-size: 0.8rem
+  font-weight: 600
+
+.statAdded
+  color: var(--success)
+
+.statRemoved
+  color: var(--danger)
+
+.date
+  font-size: 0.8rem
+  color: var(--accent2)
+
+.versionHeader
+  display: flex
+  flex-direction: column
+  gap: 0.35rem
+
+.versionNote
+  font-weight: 400
+  color: var(--body)
+
+.versionMeta
+  font-size: 0.85rem
+  color: var(--accent2)
+
+.pager
+  display: flex
+  gap: 1rem
+  font-size: 0.85rem
+
+  a
+    color: var(--link)
+
+    &:hover
+      text-decoration: underline

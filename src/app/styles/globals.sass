@@ -22,6 +22,13 @@
   --surface-border: color-mix(in srgb, var(--surface) 88%, var(--foreground) 12%)
   --code-bg: #0e0e10
 
+  // Diff rows and gutters (history pages), tinted from the status colors
+  --diff-added-bg: color-mix(in srgb, var(--success) 14%, var(--code-bg))
+  --diff-added-gutter: color-mix(in srgb, var(--success) 24%, var(--code-bg))
+  --diff-removed-bg: color-mix(in srgb, var(--danger) 14%, var(--code-bg))
+  --diff-removed-gutter: color-mix(in srgb, var(--danger) 24%, var(--code-bg))
+  --diff-hunk-bg: color-mix(in srgb, var(--link) 12%, var(--code-bg))
+
   --link: #6699cc
   --danger: #e05656
   --success: #50c878

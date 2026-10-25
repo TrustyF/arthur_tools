@@ -1,5 +1,10 @@
 import "server-only";
-import { createHighlighter, type Highlighter } from "shiki";
+import {
+	type BundledLanguage,
+	createHighlighter,
+	type Highlighter,
+	type ThemedToken,
+} from "shiki";
 import { vexGrammar } from "./vex-grammar";
 
 const THEME = "github-dark-default";
@@ -13,6 +18,19 @@ function getHighlighter(): Promise<Highlighter> {
 		langs: ["python", vexGrammar],
 	});
 	return highlighterPromise;
+}
+
+// One token array per source line, for views that lay lines out themselves (diffs).
+export async function highlightLines(
+	code: string,
+	lang: string,
+): Promise<ThemedToken[][]> {
+	const highlighter = await getHighlighter();
+	// Typed to Shiki's bundled names only; custom grammars like "vex" work at runtime.
+	return highlighter.codeToTokensBase(code, {
+		lang: lang as BundledLanguage,
+		theme: THEME,
+	});
 }
 
 export async function highlightCode(

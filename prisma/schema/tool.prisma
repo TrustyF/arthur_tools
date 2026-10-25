@@ -34,5 +34,35 @@ model Tool {
   createDate DateTime @default(now())
   updateDate DateTime @updatedAt
 
+  // Code history; Tool.code always equals the highest-numbered version's code.
+  versions ToolVersion[]
+  stats    ToolStats?
+
   @@index([isPublished, language])
+}
+
+// Usage counters, kept off Tool so bumping them never touches Tool.updateDate.
+// Written with raw upserts in src/server/tools/tool-stats.ts; no row = all zero.
+model ToolStats {
+  toolId    String @id
+  tool      Tool   @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  views     Int    @default(0)
+  // Download button and Copy button combined: both mean "took the code".
+  downloads Int    @default(0)
+}
+
+// A snapshot of a tool's code, written by saveTool whenever the code changes.
+model ToolVersion {
+  id     String @id @default(cuid())
+  toolId String
+  tool   Tool   @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  // 1, 2, 3, ... per tool, shown as v1, v2, ...
+  number Int
+  code   String @db.Text
+  // Optional "commit message" from the edit form.
+  note   String @default("")
+
+  createDate DateTime @default(now())
+
+  @@unique([toolId, number])
 }

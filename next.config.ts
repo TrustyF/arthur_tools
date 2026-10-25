@@ -6,8 +6,9 @@ const nextConfig: NextConfig = {
 	reactCompiler: true,
 	experimental: {
 		serverActions: {
-			// 1MB default is too small for icon uploads (capped at 5MB in process-icon.ts).
-			bodySizeLimit: "6mb",
+			// 1MB default is too small for uploads: icons cap at 5MB (process-icon.ts),
+			// description GIFs at 20MB (process-media.ts).
+			bodySizeLimit: "21mb",
 		},
 	},
 	images: {

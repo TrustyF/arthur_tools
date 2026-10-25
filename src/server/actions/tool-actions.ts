@@ -5,6 +5,7 @@ import { type } from "arktype";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/require-admin";
+import { DEFAULT_RETURN_PATH, safeReturnPath } from "@/lib/return-to";
 import { toolFromFormData, toolInput } from "@/lib/tool-schema";
 import { db } from "@/server/db/client";
 import {
@@ -13,6 +14,8 @@ import {
 } from "@/server/images/process-icon";
 
 export type ToolFormState = { error: string } | undefined;
+
+const MAX_NOTE_LENGTH = 200;
 
 type IconData = Pick<
 	Prisma.ToolUncheckedCreateInput,
@@ -54,19 +57,61 @@ export async function saveTool(
 	const icon = await customIconData(formData);
 	if ("error" in icon) return icon;
 	const data = { ...parsed, ...icon };
+	// The version's "commit message"; only recorded when the code changed.
+	const note = String(formData.get("changeNote") ?? "")
+		.trim()
+		.slice(0, MAX_NOTE_LENGTH);
+
+	const returnTo =
+		safeReturnPath(formData.get("returnTo")) ?? DEFAULT_RETURN_PATH;
+	let previousSlug: string | undefined;
 
 	const id = formData.get("id");
 	try {
 		if (typeof id === "string" && id) {
-			// Fetch the old slug first so a rename also refreshes the old URL.
+			// The old slug lets a rename refresh the old URL too.
 			const previous = await db.tool.findUnique({
 				where: { id },
-				select: { slug: true },
+				select: {
+					slug: true,
+					code: true,
+					versions: {
+						orderBy: { number: "desc" },
+						take: 1,
+						select: { number: true },
+					},
+				},
 			});
-			await db.tool.update({ where: { id }, data, select: { id: true } });
-			if (previous) revalidatePath(`/tools/${previous.slug}`);
+			if (!previous) return { error: "This tool no longer exists." };
+			previousSlug = previous.slug;
+
+			const nextNumber = (previous.versions[0]?.number ?? 0) + 1;
+			await db.$transaction([
+				db.tool.update({ where: { id }, data, select: { id: true } }),
+				...(previous.code === data.code
+					? []
+					: [
+							db.toolVersion.create({
+								data: { toolId: id, number: nextNumber, code: data.code, note },
+								select: { id: true },
+							}),
+						]),
+			]);
+			revalidatePath(`/tools/${previous.slug}`);
 		} else {
-			await db.tool.create({ data, select: { id: true } });
+			await db.tool.create({
+				data: {
+					...data,
+					versions: {
+						create: {
+							number: 1,
+							code: data.code,
+							note: note || "Initial version",
+						},
+					},
+				},
+				select: { id: true },
+			});
 		}
 	} catch (err) {
 		if (
@@ -80,13 +125,22 @@ export async function saveTool(
 
 	revalidatePath("/");
 	revalidatePath(`/tools/${parsed.slug}`);
-	redirect("/admin");
+	// Back to where Edit was clicked; if that was this tool's own page, follow a
+	// renamed slug, and fall back to the admin list if it's no longer public.
+	if (previousSlug && returnTo === `/tools/${previousSlug}`) {
+		redirect(
+			parsed.isPublished ? `/tools/${parsed.slug}` : DEFAULT_RETURN_PATH,
+		);
+	}
+	redirect(returnTo);
 }
 
-export async function deleteTool(id: string): Promise<void> {
+export async function deleteTool(id: string, returnTo?: string): Promise<void> {
 	await requireAdmin();
 	const tool = await db.tool.delete({ where: { id }, select: { slug: true } });
 	revalidatePath("/");
 	revalidatePath(`/tools/${tool.slug}`);
-	redirect("/admin");
+	// The tool's own page is gone now; the home page is the nearest thing.
+	const target = safeReturnPath(returnTo) ?? DEFAULT_RETURN_PATH;
+	redirect(target === `/tools/${tool.slug}` ? "/" : target);
 }

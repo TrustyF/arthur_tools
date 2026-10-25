@@ -32,6 +32,28 @@
   textarea
     resize: vertical
 
+// A field's label with a small action beside it (e.g. the description's upload button).
+.fieldHeader
+  display: flex
+  align-items: center
+  justify-content: space-between
+
+.inlineButton
+  display: inline-flex
+  align-items: center
+  gap: 0.35rem
+  padding: 0.2rem 0.6rem
+  font-size: 0.8rem
+  background: none
+  border: 1px solid var(--surface-border)
+  border-radius: var(--radius)
+  color: var(--accent3)
+  cursor: pointer
+
+  &:hover
+    color: var(--foreground)
+    border-color: var(--accent1)
+
 .hint
   color: var(--accent1)
   font-size: 0.75rem

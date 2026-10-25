@@ -1,4 +1,5 @@
 .card
+  position: relative
   display: flex
   flex-direction: column
   gap: 0.5rem
@@ -11,19 +12,64 @@
   &:hover
     border-color: var(--brand)
 
-.header
-  display: flex
-  align-items: center
-  justify-content: space-between
-  gap: 1rem
+// Covers the whole card so it stays clickable as one link.
+.titleLink::after
+  content: ""
+  position: absolute
+  inset: 0
 
-  h2
-    font-size: 1.05rem
+// Top-right, out of the layout; z-index puts it above .titleLink's overlay.
+// Shown on card hover or keyboard focus, and always on touch screens (no hover).
+.edit
+  position: absolute
+  top: 0.75rem
+  right: 0.75rem
+  z-index: 1
+  display: inline-flex
+  padding: 0.3rem
+  background: var(--surface)
+  border: 1px solid var(--surface-border)
+  border-radius: var(--radius)
+  color: var(--accent3)
+  opacity: 0
+  transition: opacity 0.15s
+
+  &:hover
+    color: var(--foreground)
+    border-color: var(--accent1)
+
+  .card:hover &, &:focus-visible
+    opacity: 1
+
+  @media (hover: none)
+    opacity: 1
 
 .name
   display: flex
   align-items: center
   gap: 0.6rem
+  // Keeps long names clear of the .edit button that appears on hover.
+  padding-right: 2rem
+
+  h2
+    font-size: 1.05rem
+
+// Pinned to the card's bottom so download counts line up across a row.
+.footer
+  display: flex
+  align-items: flex-end
+  justify-content: space-between
+  gap: 1rem
+  margin-top: auto
+
+.downloads
+  display: inline-flex
+  align-items: center
+  gap: 0.3rem
+  flex-shrink: 0
+  font-size: 0.8rem
+  font-variant-numeric: tabular-nums
+  color: var(--accent2)
 
 .summary
   font-size: 0.9rem

@@ -1,6 +1,6 @@
 import type { Tool } from "@prisma/client";
+import { Download, Pencil } from "lucide-react";
 import Link from "next/link";
-import { LanguageBadge } from "./language-badge";
 import styles from "./tool-card.module.sass";
 import { ToolIcon } from "./tool-icon";
 
@@ -10,33 +10,58 @@ type ToolCardProps = {
 		| "slug"
 		| "name"
 		| "summary"
-		| "language"
 		| "context"
 		| "tags"
 		| "houdiniIcon"
 		| "customIconDate"
 	>;
+	// Download and Copy button uses combined (ToolStats.downloads).
+	downloads: number;
+	// Admins only: links to the tool's editor.
+	editHref?: string | undefined;
 };
 
-export function ToolCard({ tool }: ToolCardProps) {
+// Links can't nest, so the title link stretches over the whole card (see
+// .titleLink) and the edit link sits above it.
+export function ToolCard({ tool, downloads, editHref }: ToolCardProps) {
 	return (
-		<Link href={`/tools/${tool.slug}`} className={styles.card}>
-			<div className={styles.header}>
-				<div className={styles.name}>
-					<ToolIcon tool={tool} size={24} />
-					<h2>{tool.name}</h2>
-				</div>
-				<LanguageBadge language={tool.language} />
+		<article className={styles.card}>
+			<div className={styles.name}>
+				<ToolIcon tool={tool} size={24} />
+				<h2>
+					<Link href={`/tools/${tool.slug}`} className={styles.titleLink}>
+						{tool.name}
+					</Link>
+				</h2>
 			</div>
+			{editHref && (
+				<Link
+					href={editHref}
+					className={styles.edit}
+					aria-label={`Edit ${tool.name}`}
+					title="Edit">
+					<Pencil size={14} />
+				</Link>
+			)}
 			{tool.summary && <p className={styles.summary}>{tool.summary}</p>}
-			<div className={styles.meta}>
-				{tool.context && <span>{tool.context}</span>}
-				{tool.tags.map((tag) => (
-					<span key={tag} className={styles.tag}>
-						#{tag}
+			<div className={styles.footer}>
+				<div className={styles.meta}>
+					{tool.context && <span>{tool.context}</span>}
+					{tool.tags.map((tag) => (
+						<span key={tag} className={styles.tag}>
+							#{tag}
+						</span>
+					))}
+				</div>
+				{downloads > 0 && (
+					<span
+						className={styles.downloads}
+						title={`${downloads} ${downloads === 1 ? "download" : "downloads"}`}>
+						<Download size={13} aria-hidden />
+						{downloads}
 					</span>
-				))}
+				)}
 			</div>
-		</Link>
+		</article>
 	);
 }

@@ -21,6 +21,7 @@ export default async function AdminPage() {
 			updateDate: true,
 			houdiniIcon: true,
 			customIconDate: true,
+			stats: { select: { views: true, downloads: true } },
 		},
 	});
 
@@ -42,6 +43,12 @@ export default async function AdminPage() {
 							<th>Name</th>
 							<th>Language</th>
 							<th>Status</th>
+							<th className={styles.count}>Views</th>
+							<th
+								className={styles.count}
+								title="Download and Copy button uses combined">
+								Downloads
+							</th>
 							<th>Updated</th>
 						</tr>
 					</thead>
@@ -70,6 +77,9 @@ export default async function AdminPage() {
 										<span className={styles.draft}>Draft</span>
 									)}
 								</td>
+								{/* No stats row yet means nothing counted so far. */}
+								<td className={styles.count}>{tool.stats?.views ?? 0}</td>
+								<td className={styles.count}>{tool.stats?.downloads ?? 0}</td>
 								<td>{tool.updateDate.toISOString().slice(0, 10)}</td>
 							</tr>
 						))}

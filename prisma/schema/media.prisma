@@ -1,0 +1,14 @@
+// Images and GIFs uploaded for tool descriptions. The bytes live in media
+// storage (R2 in production, see src/server/storage/media-storage.ts); the
+// description's Markdown holds the public URL. Not linked to a tool: an upload
+// can happen before a new tool is first saved.
+model Media {
+  id         String   @id @default(cuid())
+  // Storage key, e.g. "media/<uuid>.webp". Always WebP (animated for GIFs).
+  key        String   @unique
+  width      Int
+  height     Int
+  // Original upload's file name, used as the default alt text.
+  fileName   String   @default("")
+  createDate DateTime @default(now())
+}

@@ -49,6 +49,14 @@ services:
       AUTH_TRUST_HOST: "true"
       AUTH_URL: ${SITE_URL:-http://localhost:3000}
       SITE_URL: ${SITE_URL:-http://localhost:3000}
+      # Description images (src/server/storage/media-storage.ts). Without the R2
+      # values, uploads fail with an error; the rest of the site still works.
+      MEDIA_STORAGE_DRIVER: ${MEDIA_STORAGE_DRIVER:-local}
+      R2_ACCOUNT_ID: ${R2_ACCOUNT_ID:-}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:-}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:-}
+      R2_BUCKET_NAME: ${R2_BUCKET_NAME:-}
+      R2_PUBLIC_URL: ${R2_PUBLIC_URL:-}
     volumes:
       # data/houdini-icons.pack: not in git or the image (SideFX's artwork), copied
       # to the host separately. A directory mount, so a replaced pack is picked up live.

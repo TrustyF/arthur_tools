@@ -38,12 +38,48 @@
     color: var(--foreground)
     border-color: var(--accent1)
 
+// Holds the fade, outside .code so it doesn't scroll sideways with the code.
+.area
+  position: relative
+
 .code
   background: var(--code-bg)
   overflow-x: auto
+  // On .code rather than pre, so the collapsed height below can count lines in em.
+  font-size: 0.85rem
+  line-height: 1.55
 
   :global(pre)
     padding: 1rem 1.25rem
-    font-size: 0.85rem
-    line-height: 1.55
     tab-size: 4
+
+// --collapsed-lines is set by expandable-code.tsx; 1rem is pre's top padding.
+.collapsed
+  .code
+    max-height: calc(var(--collapsed-lines) * 1.55em + 1rem)
+    overflow-y: hidden
+
+  &::after
+    content: ""
+    position: absolute
+    inset: auto 0 0
+    height: 4rem
+    background: linear-gradient(transparent, var(--code-bg))
+    pointer-events: none
+
+.toggle
+  display: flex
+  align-items: center
+  justify-content: center
+  gap: 0.35rem
+  width: 100%
+  padding: 0.45rem
+  font-size: 0.8rem
+  background: var(--surface)
+  border: none
+  border-top: 1px solid var(--surface-border)
+  color: var(--accent3)
+  cursor: pointer
+
+  &:hover
+    color: var(--foreground)

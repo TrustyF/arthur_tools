@@ -2,12 +2,15 @@ import { Download } from "lucide-react";
 import { highlightCode } from "@/lib/highlight/highlight";
 import styles from "./code-block.module.sass";
 import { CopyButton } from "./copy-button";
+import { ExpandableCode } from "./expandable-code";
 
 type CodeBlockProps = {
 	code: string;
 	lang: string;
 	fileName: string;
 	downloadHref?: string;
+	// Where the Copy button reports copies (counted as downloads); omit to skip.
+	eventsUrl?: string;
 };
 
 export async function CodeBlock({
@@ -15,6 +18,7 @@ export async function CodeBlock({
 	lang,
 	fileName,
 	downloadHref,
+	eventsUrl,
 }: CodeBlockProps) {
 	const html = await highlightCode(code, lang);
 
@@ -23,7 +27,7 @@ export async function CodeBlock({
 			<div className={styles.toolbar}>
 				<span className={styles.fileName}>{fileName}</span>
 				<div className={styles.actions}>
-					<CopyButton text={code} />
+					<CopyButton text={code} eventsUrl={eventsUrl} />
 					{downloadHref && (
 						<a href={downloadHref} className={styles.action} download>
 							<Download size={14} />
@@ -32,11 +36,7 @@ export async function CodeBlock({
 					)}
 				</div>
 			</div>
-			<div
-				className={styles.code}
-				// biome-ignore lint/security/noDangerouslySetInnerHtml: Shiki output, which escapes the source
-				dangerouslySetInnerHTML={{ __html: html }}
-			/>
+			<ExpandableCode html={html} lineCount={code.split("\n").length} />
 		</div>
 	);
 }
