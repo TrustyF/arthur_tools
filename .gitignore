@@ -49,3 +49,6 @@ next-env.d.ts
 
 # Database dumps (e.g. on thinkguy, taken before deploys that run migrations)
 /backups/
+
+# Cron job output on thinkguy (crontab line in the README's Production section)
+/cron-logs/

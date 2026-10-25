@@ -20,7 +20,8 @@
 		"prisma_migrate": "npx prisma migrate dev",
 		"compose": "docker compose up -d --wait db && npx prisma migrate deploy",
 		"create_admin": "tsx src/scripts/create-admin.ts",
-		"import_houdini_icons": "tsx src/scripts/import-houdini-icons.ts"
+		"import_houdini_icons": "tsx src/scripts/import-houdini-icons.ts",
+		"cleanup_media": "tsx --conditions=react-server src/scripts/cleanup-media.ts"
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.1156.0",

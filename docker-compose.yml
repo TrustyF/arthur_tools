@@ -36,6 +36,25 @@ services:
       db:
         condition: service_healthy
 
+  # One-off jobs, never started by `docker compose up`:
+  #   docker compose run --rm maintenance npm run cleanup_media [-- --apply]
+  maintenance:
+    profiles: ["tools"]
+    build:
+      context: .
+      target: tools
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-arthur_tools}
+      MEDIA_STORAGE_DRIVER: ${MEDIA_STORAGE_DRIVER:-local}
+      R2_ACCOUNT_ID: ${R2_ACCOUNT_ID:-}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:-}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:-}
+      R2_BUCKET_NAME: ${R2_BUCKET_NAME:-}
+      R2_PUBLIC_URL: ${R2_PUBLIC_URL:-}
+    depends_on:
+      db:
+        condition: service_healthy
+
   app:
     build:
       context: .

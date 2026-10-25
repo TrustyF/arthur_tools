@@ -40,7 +40,19 @@ Each tool can show a Houdini icon, a custom image, or nothing. A custom image ta
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run prisma_migrate` | Create a migration after a schema change |
 | `npm run studio` | Prisma Studio |
+| `npm run cleanup_media` | List description images no tool uses any more; add `-- --apply` to delete them |
 
 The Husky pre-commit hook runs lint and typecheck.
+
+## Production (thinkguy)
+
+The site runs in `~/arthur_tools` with `docker-compose.prod.yml` layered on (set by `.env`'s `COMPOSE_FILE`), behind a Cloudflare Tunnel. Description images go to an R2 bucket (`R2_*` in `.env`).
+
+- **Deploy:** push to `main`, then run `scripts/deploy.sh` on thinkguy. Before a deploy with migrations, dump the database into `backups/`.
+- **Unused images:** `cleanup_media` runs weekly from the user crontab. It skips images younger than 24 hours, so an editor that hasn't been saved yet is safe:
+
+  ```
+  30 6 * * 0 cd /home/arthur/arthur_tools && docker compose run --rm -T maintenance npm run cleanup_media -- --apply >> cron-logs/cleanup_media.log 2>&1
+  ```
 
 Colors live only as tokens in `src/app/styles/globals.sass`'s `:root`. `lint:colors` fails on hardcoded colors anywhere else.

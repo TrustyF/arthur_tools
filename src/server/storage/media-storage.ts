@@ -1,7 +1,11 @@
 import "server-only";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {
+	DeleteObjectCommand,
+	PutObjectCommand,
+	S3Client,
+} from "@aws-sdk/client-s3";
 
 // Where uploaded description images live: local disk in dev, the R2 bucket in
 // production (MEDIA_STORAGE_DRIVER=r2). Keys look like "media/<id>.webp".
@@ -9,6 +13,8 @@ export interface MediaStorage {
 	write(key: string, bytes: Buffer, contentType: string): Promise<void>;
 	// Public URL stored in descriptions, so it must work from any page.
 	urlFor(key: string): string;
+	// Succeeds when the object is already gone (R2 deletes are idempotent too).
+	remove(key: string): Promise<void>;
 }
 
 // Under data/ (gitignored); served by app/media/[file]/route.ts in dev.
@@ -23,6 +29,10 @@ class LocalMediaStorage implements MediaStorage {
 
 	urlFor(key: string): string {
 		return `/${key}`;
+	}
+
+	async remove(key: string): Promise<void> {
+		await rm(path.join(LOCAL_ROOT, key), { force: true });
 	}
 }
 
@@ -64,6 +74,12 @@ class R2MediaStorage implements MediaStorage {
 
 	urlFor(key: string): string {
 		return `${requireEnv("R2_PUBLIC_URL").replace(/\/$/, "")}/${key}`;
+	}
+
+	async remove(key: string): Promise<void> {
+		await this.getClient().send(
+			new DeleteObjectCommand({ Bucket: requireEnv("R2_BUCKET_NAME"), Key: key }),
+		);
 	}
 }
 

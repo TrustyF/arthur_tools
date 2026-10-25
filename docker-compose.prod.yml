@@ -22,6 +22,11 @@ services:
       firewall-init:
         condition: service_completed_successfully
 
+  # Same storage as the app, so cleanup_media deletes from the R2 bucket.
+  maintenance:
+    environment:
+      MEDIA_STORAGE_DRIVER: r2
+
   # Applies the DOCKER-USER iptables rules that stop this project's network from
   # reaching the LAN / other Docker networks (see scripts/docker-user-lan-isolation.sh).
   # Host-level chain, hence network_mode: host + NET_ADMIN. Exits after applying.
