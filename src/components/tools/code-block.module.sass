@@ -1,0 +1,49 @@
+@use "../../app/styles/variables" as *
+
+.wrapper
+  border: 1px solid var(--surface-border)
+  border-radius: var(--radius)
+  overflow: hidden
+
+.toolbar
+  display: flex
+  align-items: center
+  justify-content: space-between
+  padding: 0.4rem 0.75rem
+  background: var(--surface)
+  border-bottom: 1px solid var(--surface-border)
+
+.fileName
+  font-family: $font-mono
+  font-size: 0.8rem
+  color: var(--accent3)
+
+.actions
+  display: flex
+  gap: 0.5rem
+
+.action
+  display: inline-flex
+  align-items: center
+  gap: 0.35rem
+  padding: 0.25rem 0.6rem
+  font-size: 0.8rem
+  background: none
+  border: 1px solid var(--surface-border)
+  border-radius: var(--radius)
+  color: var(--accent3)
+  cursor: pointer
+
+  &:hover
+    color: var(--foreground)
+    border-color: var(--accent1)
+
+.code
+  background: var(--code-bg)
+  overflow-x: auto
+
+  :global(pre)
+    padding: 1rem 1.25rem
+    font-size: 0.85rem
+    line-height: 1.55
+    tab-size: 4

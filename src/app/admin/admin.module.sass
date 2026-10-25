@@ -1,0 +1,57 @@
+.header
+  display: flex
+  align-items: center
+  justify-content: space-between
+  margin-bottom: 1.5rem
+
+  h1
+    font-size: 1.5rem
+
+.newButton
+  padding: 0.45rem 1rem
+  border-radius: var(--radius)
+  background: var(--brand)
+  color: var(--background)
+  font-weight: 600
+  font-size: 0.9rem
+
+  &:hover
+    background: var(--brand-hover)
+
+.table
+  width: 100%
+  border-collapse: collapse
+  font-size: 0.9rem
+
+  th
+    text-align: left
+    font-weight: 500
+    font-size: 0.75rem
+    text-transform: uppercase
+    letter-spacing: 0.04em
+    color: var(--accent1)
+
+  th, td
+    padding: 0.6rem 0.5rem
+    border-bottom: 1px solid var(--surface-border)
+
+  td a:hover
+    color: var(--brand-hover)
+
+.nameCell
+  display: inline-flex
+  align-items: center
+  gap: 0.5rem
+
+.published
+  color: var(--success)
+
+.draft
+  color: var(--accent2)
+
+.empty
+  color: var(--accent1)
+
+.title
+  font-size: 1.5rem
+  margin-bottom: 1.5rem

@@ -1,0 +1,48 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+# Turbopack dev-server writes its error-overlay output to the Windows null
+# device path ("nul"); a Windows/Node quirk sometimes creates a literal file.
+/nul
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+
+# local env files
+.env*.local
+.env
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# claude code local settings
+.claude/
+
+# Next.js compiles .sass files directly — these are stale IDE file-watcher output
+/src/app/styles/globals.css
+/src/app/styles/globals.css.map
+**/*.module.css
+**/*.module.css.map
+
+/.idea/
+/AGENTS.md
+
+# SideFX's icon set, copied from a local Houdini install by
+# `npm run import_houdini_icons` (SideFX's artwork, so not committed).
+/public/houdini-icons/

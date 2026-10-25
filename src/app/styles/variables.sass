@@ -1,0 +1,17 @@
+$font-sans: var(--font-geist-sans), Arial, Helvetica, sans-serif
+$font-mono: var(--font-geist-mono), Consolas, "Courier New", monospace
+
+// Page content column width
+$content-width: 1000px
+
+// General mobile layout breakpoint (grids, cards, page layouts).
+$mobile-breakpoint: 700px
+
+// Responsive wrapper: adds padding below $max-width, keeping desktop layout pixel-identical
+@mixin content-wrapper($max-width: $content-width)
+  width: 100%
+  max-width: $max-width
+  margin-inline: auto
+
+  @media (max-width: $max-width)
+    padding-inline: 1.25rem

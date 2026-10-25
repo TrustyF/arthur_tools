@@ -1,0 +1,38 @@
+@use "../../app/styles/variables" as *
+
+.wrapper
+  border-bottom: 1px solid var(--surface-border)
+  background: var(--surface)
+
+.nav
+  @include content-wrapper
+  height: var(--navbar-height)
+  display: flex
+  align-items: center
+  justify-content: space-between
+
+.logo
+  font-family: $font-mono
+  font-weight: 600
+  color: var(--foreground)
+
+  span
+    color: var(--brand)
+
+.links
+  display: flex
+  align-items: center
+  gap: 1.25rem
+  font-size: 0.9rem
+
+  a:hover
+    color: var(--brand-hover)
+
+.signOut
+  background: none
+  border: none
+  cursor: pointer
+  color: var(--accent3)
+
+  &:hover
+    color: var(--foreground)

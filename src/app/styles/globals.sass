@@ -1,0 +1,63 @@
+@use "variables" as *
+
+:root
+  --background: #141416
+  --foreground: #ededed
+  --body: #cccccc
+
+  // Houdini orange; all variants derived via color-mix() for one-line re-branding
+  --brand: #ff7a1a
+  --brand-hover: color-mix(in srgb, var(--brand) 85%, white 15%)
+  --brand-muted: color-mix(in srgb, var(--brand) 15%, var(--background) 85%)
+
+  // Per-language badge colors
+  --lang-python: #4b8bbe
+  --lang-vex: #c678dd
+
+  --accent1: #666666
+  --accent2: #808080
+  --accent3: #999999
+
+  --surface: #1c1c1f
+  --surface-border: color-mix(in srgb, var(--surface) 88%, var(--foreground) 12%)
+  --code-bg: #0e0e10
+
+  --link: #6699cc
+  --danger: #e05656
+  --success: #50c878
+
+  --radius: 6px
+  --navbar-height: 3.5rem
+
+*
+  box-sizing: border-box
+  padding: 0
+  margin: 0
+
+html
+  color-scheme: dark
+
+body
+  background: var(--background)
+  color: var(--body)
+  font-family: $font-sans
+  -webkit-font-smoothing: antialiased
+  min-height: 100vh
+
+main
+  @include content-wrapper
+  padding-block: 2rem 4rem
+
+h1, h2, h3
+  color: var(--foreground)
+
+a
+  color: inherit
+  text-decoration: none
+
+button, input, textarea, select
+  font: inherit
+  color: inherit
+
+code, pre
+  font-family: $font-mono

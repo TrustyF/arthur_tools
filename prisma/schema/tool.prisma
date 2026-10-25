@@ -1,0 +1,38 @@
+// New tool kinds (HDAs, shelf files, ...) slot in as new values here.
+enum ToolLanguage {
+  PYTHON
+  VEX
+}
+
+model Tool {
+  id          String       @id @default(cuid())
+  // URL segment for /tools/[slug]; derived from name on create, editable after.
+  slug        String       @unique
+  name        String
+  // Short one-liner shown on the index card.
+  summary     String       @default("")
+  // Longer usage notes, plain text with line breaks preserved.
+  description String       @default("") @db.Text
+  language    ToolLanguage
+  // Where it runs, e.g. "Attribute Wrangle (points)", "Shelf tool", "Python SOP".
+  context     String       @default("")
+  // Oldest Houdini version it's known to work in, e.g. "20.5".
+  houdiniVersion String    @default("")
+  code        String       @db.Text
+  // Houdini icon name as shelf tools write it, e.g. "SOP_null" — served from
+  // public/houdini-icons (see src/scripts/import-houdini-icons.ts).
+  houdiniIcon String       @default("")
+  // Uploaded icon, normalised to a square WebP. Wins over houdiniIcon when set.
+  // Omitted from queries by default (src/server/db/client.ts) to keep rows light.
+  customIcon  Bytes?
+  // Set alongside customIcon: marks that one exists and versions its URL.
+  customIconDate DateTime?
+  tags        String[]     @default([])
+  // Drafts are only visible under /admin.
+  isPublished Boolean      @default(false)
+
+  createDate DateTime @default(now())
+  updateDate DateTime @updatedAt
+
+  @@index([isPublished, language])
+}

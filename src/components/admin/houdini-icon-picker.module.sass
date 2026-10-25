@@ -1,0 +1,72 @@
+.picker
+  display: flex
+  flex-direction: column
+  gap: 0.5rem
+
+.current
+  display: flex
+  align-items: center
+  gap: 0.6rem
+  color: var(--foreground)
+
+  code
+    font-size: 0.85rem
+
+  button
+    padding: 0.25rem 0.7rem
+    background: none
+    border: 1px solid var(--surface-border)
+    border-radius: var(--radius)
+    font-size: 0.8rem
+    cursor: pointer
+
+    &:hover
+      border-color: var(--accent1)
+
+.none
+  color: var(--accent1)
+  font-size: 0.85rem
+
+.panel
+  display: flex
+  flex-direction: column
+  gap: 0.6rem
+  padding: 0.75rem
+  background: var(--surface)
+  border: 1px solid var(--surface-border)
+  border-radius: var(--radius)
+
+.search
+  padding: 0.45rem 0.65rem
+  background: var(--background)
+  border: 1px solid var(--surface-border)
+  border-radius: var(--radius)
+  color: var(--foreground)
+
+  &:focus
+    outline: none
+    border-color: var(--brand)
+
+.grid
+  display: grid
+  grid-template-columns: repeat(auto-fill, minmax(44px, 1fr))
+  gap: 0.35rem
+  max-height: 16rem
+  overflow-y: auto
+
+  button
+    display: flex
+    align-items: center
+    justify-content: center
+    aspect-ratio: 1
+    background: none
+    border: 1px solid transparent
+    border-radius: var(--radius)
+    cursor: pointer
+
+    &:hover
+      border-color: var(--accent1)
+
+  .selected
+    border-color: var(--brand)
+    background: var(--brand-muted)
