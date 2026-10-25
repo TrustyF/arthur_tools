@@ -11,6 +11,7 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { detectFirewallBlock } from "@/lib/firewall-block";
 import { DEFAULT_RETURN_PATH } from "@/lib/return-to";
 import { submitWithoutReset } from "@/lib/submit-without-reset";
 import {
@@ -86,6 +87,12 @@ export function ToolForm({ tool, returnTo }: ToolFormProps) {
 			try {
 				result = await saveTool(prev, formData);
 			} catch {
+				const block = await detectFirewallBlock(formData);
+				if (block) {
+					return {
+						error: `Cloudflare's firewall blocked this save, probably because the code looks like an injection attack to it. Your changes are kept in this browser. Look up Ray ID ${block.rayId ?? "(unknown)"} under Security → Events in the Cloudflare dashboard to see which rule matched.`,
+					};
+				}
 				// Network loss, an expired session, or a deploy that replaced this
 				// page's version of the action. The draft is still in this browser.
 				return {
