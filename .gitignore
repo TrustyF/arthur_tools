@@ -43,6 +43,6 @@ next-env.d.ts
 /.idea/
 /AGENTS.md
 
-# SideFX's icon set, copied from a local Houdini install by
-# `npm run import_houdini_icons` (SideFX's artwork, so not committed).
-/public/houdini-icons/
+# data/houdini-icons.pack: SideFX's icon set, packed from a local Houdini install
+# by `npm run import_houdini_icons` (SideFX's artwork, so not committed).
+/data/

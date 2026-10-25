@@ -1,21 +1,20 @@
 // Usage: npm run import_houdini_icons -- <path>
 // <path>: a Houdini install ($HFS), its houdini/config/Icons/icons.zip, or an extracted copy.
 
-// Renders each CATEGORY/name.svg to public/houdini-icons as WebP, plus manifest.json
-// (the picker's name list). Re-run after upgrading Houdini; it replaces the last import.
+// Renders each CATEGORY/name.svg to WebP and packs them into one file
+// (data/houdini-icons.pack, see lib/houdini-icon-pack.ts). Re-run after upgrading Houdini.
 import { existsSync, statSync } from "node:fs";
-import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import AdmZip from "adm-zip";
 import sharp from "sharp";
 import {
-	HOUDINI_ICON_PATTERN,
-	HOUDINI_ICONS_URL,
-	houdiniIconSrc,
-} from "@/lib/tool-icon";
+	buildPack,
+	HOUDINI_ICON_PACK_PATH,
+	readPackIndexFromPath,
+} from "@/lib/houdini-icon-pack";
+import { HOUDINI_ICON_PATTERN } from "@/lib/tool-icon";
 
-const PUBLIC_DIR = path.resolve(process.cwd(), "public");
-const OUT_DIR = path.join(PUBLIC_DIR, HOUDINI_ICONS_URL);
 // Houdini's alias list ("SOP_null := COMMON_null;"), at the archive root.
 const MAPPING_FILE = "IconMapping";
 // Icons display at ≤36px; 96px stays sharp on 2x screens. Houdini's SVGs run
@@ -130,8 +129,6 @@ async function main() {
 	}
 	const aliased = mapping ? applyAliases(icons, mapping) : 0;
 
-	await rm(OUT_DIR, { recursive: true, force: true });
-
 	// Aliases share their target's Read, so each source SVG renders once.
 	const renders = new Map<Read, Promise<Buffer>>();
 	const render = (read: Read) => {
@@ -151,19 +148,14 @@ async function main() {
 		return result;
 	};
 
-	const names: string[] = [];
+	const rendered = new Map<string, Buffer>();
 	const failed: string[] = [];
 	const queue = [...icons];
 	async function worker() {
 		for (let item = queue.pop(); item; item = queue.pop()) {
 			const [name, read] = item;
 			try {
-				const image = await render(read);
-				// Same path the site requests, so import and lookup can't drift apart.
-				const target = path.join(PUBLIC_DIR, houdiniIconSrc(name));
-				await mkdir(path.dirname(target), { recursive: true });
-				await writeFile(target, image);
-				names.push(name);
+				rendered.set(name, await render(read));
 			} catch {
 				failed.push(name);
 			}
@@ -171,11 +163,18 @@ async function main() {
 	}
 	await Promise.all(Array.from({ length: RENDER_CONCURRENCY }, worker));
 
-	names.sort();
-	await writeFile(path.join(OUT_DIR, "manifest.json"), JSON.stringify(names));
+	// Write beside the target, then rename over it: a running server only ever
+	// sees the old pack or the complete new one.
+	const pack = buildPack(rendered);
+	const temp = `${HOUDINI_ICON_PACK_PATH}.tmp`;
+	await mkdir(path.dirname(HOUDINI_ICON_PACK_PATH), { recursive: true });
+	await writeFile(temp, pack);
+	readPackIndexFromPath(temp);
+	await rename(temp, HOUDINI_ICON_PACK_PATH);
 
 	console.log(
-		`Imported ${names.length} icons (${aliased} via IconMapping aliases) from ${source}`,
+		`Packed ${rendered.size} icons (${aliased} via IconMapping aliases) into ` +
+			`${HOUDINI_ICON_PACK_PATH} (${(pack.length / 1e6).toFixed(1)} MB) from ${source}`,
 	);
 	if (failed.length > 0) {
 		console.warn(`Skipped ${failed.length} unrenderable: ${failed.join(", ")}`);

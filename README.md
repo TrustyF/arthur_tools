@@ -18,7 +18,9 @@ Open http://localhost:3000. Sign in at `/login`, then add tools from `/admin`.
 
 Each tool can show a Houdini icon, a custom image, or nothing. A custom image takes priority.
 
-- **Houdini icons:** run `npm run import_houdini_icons -- "C:\Program Files\Side Effects Software\Houdini 21.0.xxx"`. The path can be the Houdini install, its `houdini/config/Icons/icons.zip`, or an extracted copy. This renders the SVGs to 96px WebPs in `public/houdini-icons/` (about 20 MB instead of 175 MB of SVG). It also applies Houdini's `IconMapping` aliases, so names like `SOP_null` resolve the way they do in Houdini. Git ignores the folder because the icons are SideFX's artwork, but a local `docker build` still includes it. The admin form's picker stores names the way shelf tools do (`SOP_null`). Re-run it after upgrading Houdini.
+- **Houdini icons:** run `npm run import_houdini_icons -- "C:\Program Files\Side Effects Software\Houdini 21.0.xxx"`. The path can be the Houdini install, its `houdini/config/Icons/icons.zip`, or an extracted copy. This renders the SVGs to 96px WebPs and packs them into a single file, `data/houdini-icons.pack` (about 14 MB, with each distinct image stored once). It also applies Houdini's `IconMapping` aliases, so names like `SOP_null` resolve the way they do in Houdini. The admin form's picker stores names the way shelf tools do (`SOP_null`). Re-run it after upgrading Houdini.
+
+  `data/` is ignored by git and Docker because the icons are SideFX's artwork. To deploy the icons, copy the pack to the server: `scp data/houdini-icons.pack thinkguy:arthur_tools/data/`. The running app picks up a replaced pack without restarting.
 - **Custom images:** upload PNG, JPEG, WebP or SVG (up to 5 MB) on the tool form. They're resized to a 128px WebP and stored in Postgres.
 
 ## Layout

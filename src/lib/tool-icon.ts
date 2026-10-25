@@ -1,9 +1,10 @@
 // Shelf-tool style names: category prefix, then the icon, e.g. "SOP_null".
 export const HOUDINI_ICON_PATTERN = /^[A-Z0-9]+_[A-Za-z0-9_.-]+$/;
 
-// Where import-houdini-icons.ts writes the rendered icons and the picker's name list.
+// Served from the icon pack (data/houdini-icons.pack) by app/houdini-icons/[category]/[file].
 export const HOUDINI_ICONS_URL = "/houdini-icons";
-export const HOUDINI_ICON_MANIFEST_URL = `${HOUDINI_ICONS_URL}/manifest.json`;
+// The picker's list of names (app/api/houdini-icons).
+export const HOUDINI_ICON_MANIFEST_URL = "/api/houdini-icons";
 
 // "SOP_null" → /houdini-icons/SOP/null.webp, mirroring icons.zip's layout.
 export function houdiniIconSrc(name: string): string {

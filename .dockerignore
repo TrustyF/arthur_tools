@@ -5,4 +5,4 @@ node_modules
 *.log
 # Mounted at runtime instead (docker-compose.yml's app volume), so the image
 # is the same whether or not icons were imported on the building machine.
-public/houdini-icons
+data

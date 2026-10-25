@@ -50,9 +50,9 @@ services:
       AUTH_URL: ${SITE_URL:-http://localhost:3000}
       SITE_URL: ${SITE_URL:-http://localhost:3000}
     volumes:
-      # Not in git or the image (SideFX's artwork); copied to the host separately.
-      # Read-only: the app only serves them.
-      - ./public/houdini-icons:/app/public/houdini-icons:ro
+      # data/houdini-icons.pack: not in git or the image (SideFX's artwork), copied
+      # to the host separately. A directory mount, so a replaced pack is picked up live.
+      - ./data:/app/data:ro
     healthcheck:
       # node:22-slim has no curl/wget.
       test:
