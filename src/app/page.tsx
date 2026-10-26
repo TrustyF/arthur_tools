@@ -1,6 +1,8 @@
 import type { Prisma } from "@prisma/client";
+import { Download } from "lucide-react";
 import Link from "next/link";
 import { auth } from "@/auth";
+import { SHOW_BUNDLE } from "@/lib/bundle";
 import { editHref } from "@/lib/return-to";
 import { ToolCard } from "@/components/tools/tool-card";
 import {
@@ -51,8 +53,20 @@ export default async function Home(props: PageProps<"/">) {
 	return (
 		<>
 			<section className={styles.intro}>
-				<h1>Houdini tools</h1>
-				<p>Python scripts and VEX snippets for Houdini.</p>
+				<div>
+					<h1>Houdini tools</h1>
+					<p>Python scripts and VEX snippets for Houdini.</p>
+				</div>
+				{SHOW_BUNDLE && (
+					<div className={styles.bundle}>
+						{/* Plain <a>: a file download, not a page to prefetch. */}
+						<a href="/download" className={styles.downloadAll} download>
+							<Download size={15} aria-hidden />
+							Download all
+						</a>
+						<Link href="/help#bundle">One shelf, every tool</Link>
+					</div>
+				)}
 			</section>
 
 			<div className={styles.filters}>

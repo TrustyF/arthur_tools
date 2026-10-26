@@ -83,6 +83,14 @@ export default async function ToolPage(props: PageProps<"/tools/[slug]">) {
 							</dd>
 						</div>
 					)}
+					{tool.shortcut && (
+						<div>
+							<dt>Suggested shortcut</dt>
+							<dd>
+								<kbd className={styles.shortcut}>{tool.shortcut}</kbd>
+							</dd>
+						</div>
+					)}
 					<div>
 						<dt>Updated</dt>
 						<dd>{tool.updateDate.toISOString().slice(0, 10)}</dd>

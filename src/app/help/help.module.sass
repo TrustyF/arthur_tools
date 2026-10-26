@@ -1,30 +1,23 @@
 @use "../styles/variables" as *
 
 .page
-  max-width: 42rem
-  line-height: 1.65
+  max-width: 44rem
+  line-height: 1.7
 
   h1
-    font-size: 1.75rem
+    font-size: 1.85rem
 
   h2
-    font-size: 1.3rem
-    margin: 2.25rem 0 0.25rem
-    padding-bottom: 0.4rem
-    border-bottom: 1px solid var(--surface-border)
+    font-size: 1.35rem
+    margin: 2.75rem 0 1rem
 
-  h3
-    font-size: 1rem
-    margin: 1.25rem 0 0.3rem
+  // Under h2 (Houdini folder section) rather than inside a .method card.
+  > section > h3
+    font-size: 1.05rem
+    margin: 2rem 0 0.5rem
 
-  p + p, p + pre, pre + p
-    margin-top: 0.6rem
-
-  ol
-    padding-left: 1.4rem
-
-    li + li
-      margin-top: 0.4rem
+  p + ol
+    margin-top: 0.5rem
 
   a
     color: var(--link)
@@ -38,16 +31,7 @@
     padding: 0.1rem 0.35rem
     border-radius: 4px
     background: var(--surface)
-
-  pre
-    margin-top: 0.4rem
-    padding: 0.65rem 0.9rem
-    font-family: $font-mono
-    font-size: 0.85rem
-    background: var(--code-bg)
-    border: 1px solid var(--surface-border)
-    border-radius: var(--radius)
-    overflow-x: auto
+    color: var(--foreground)
 
   // Section ids are jump targets; keep headings clear of the top edge.
   section
@@ -55,7 +39,120 @@
 
 .lead
   margin-top: 0.5rem
+  font-size: 1.05rem
   color: var(--accent3)
+
+.jump
+  display: flex
+  flex-wrap: wrap
+  gap: 0.5rem
+  margin-top: 1.25rem
+
+  a
+    padding: 0.3rem 0.85rem
+    border: 1px solid var(--surface-border)
+    border-radius: 999px
+    font-size: 0.85rem
+    color: var(--body)
+
+    &:hover
+      text-decoration: none
+      border-color: var(--brand)
+
+// Each language's section is marked by its badge color on the heading.
+.python, .vex
+  h2
+    padding-left: 0.75rem
+    border-left: 3px solid var(--section-color)
+
+.python
+  --section-color: var(--lang-python)
+
+.vex
+  --section-color: var(--lang-vex)
+
+.method
+  padding: 1rem 1.25rem 1.15rem
+  background: var(--surface)
+  border: 1px solid var(--surface-border)
+  border-radius: var(--radius)
+
+  & + &
+    margin-top: 1rem
+
+  h3
+    margin-bottom: 0.6rem
+    font-size: 1.05rem
+
+  // Inline code sits on the card's surface color; step back to the page's.
+  code
+    background: var(--background)
+
+// Numbered steps with the number in a circle beside each.
+.steps
+  counter-reset: step
+  list-style: none
+
+  li
+    counter-increment: step
+    position: relative
+    padding-left: 2.1rem
+
+    & + li
+      margin-top: 0.55rem
+
+    &::before
+      content: counter(step)
+      position: absolute
+      left: 0
+      top: 0.2rem
+      display: grid
+      place-items: center
+      width: 1.45rem
+      height: 1.45rem
+      border-radius: 50%
+      background: var(--brand-muted)
+      color: var(--brand)
+      font-size: 0.75rem
+      font-weight: 600
+      line-height: 1
+
+// Code to type into Houdini, with a Copy button in its corner.
+.snippet
+  position: relative
+  margin-top: 0.5rem
+
+  pre
+    padding: 0.7rem 6rem 0.7rem 0.9rem
+    font-family: $font-mono
+    font-size: 0.85rem
+    line-height: 1.55
+    background: var(--code-bg)
+    border: 1px solid var(--surface-border)
+    border-radius: var(--radius)
+    overflow-x: auto
+    color: var(--foreground)
+
+  button
+    position: absolute
+    top: 0.45rem
+    right: 0.45rem
+    background: var(--code-bg)
+
+.note
+  display: flex
+  gap: 0.6rem
+  margin-top: 0.85rem
+  padding: 0.6rem 0.85rem
+  border-left: 3px solid var(--accent1)
+  background: var(--background)
+  border-radius: 0 var(--radius) var(--radius) 0
+  font-size: 0.9rem
+  color: var(--accent3)
+
+  svg
+    flex-shrink: 0
+    margin-top: 0.25rem
 
 // Houdini menu items, buttons and tabs, so they stand out from the prose.
 .ui
@@ -63,12 +160,23 @@
   color: var(--foreground)
 
 .table
-  margin-top: 0.6rem
+  width: 100%
   border-collapse: collapse
   font-size: 0.9rem
+  border: 1px solid var(--surface-border)
+  border-radius: var(--radius)
+
+  th, td
+    padding: 0.55rem 0.9rem
+    border-bottom: 1px solid var(--surface-border)
+
+  tr:last-child
+    th, td
+      border-bottom: none
 
   th
-    padding: 0.3rem 1.5rem 0.3rem 0
+    width: 7rem
     text-align: left
     font-weight: 500
     color: var(--accent3)
+    background: var(--surface)

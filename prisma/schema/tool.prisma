@@ -30,6 +30,9 @@ model Tool {
   // Media URL (an uploaded GIF, stored as animated WebP) of the tool in use,
   // shown when hovering its card. Empty for none.
   previewUrl  String       @default("")
+  // Suggested hotkey, in Houdini's notation ("Alt+Shift+N"). Only shown on the
+  // tool page; nothing binds it. Empty for none.
+  shortcut    String       @default("")
   tags        String[]     @default([])
   // Drafts are only visible under /admin.
   isPublished Boolean      @default(false)

@@ -11,6 +11,7 @@ export type DraftValues = {
 	houdiniVersion: string;
 	houdiniIcon: string;
 	previewUrl: string;
+	shortcut: string;
 	summary: string;
 	tags: string;
 	description: string;
@@ -30,6 +31,7 @@ const TEXT_FIELDS = [
 	"houdiniVersion",
 	"houdiniIcon",
 	"previewUrl",
+	"shortcut",
 	"summary",
 	"tags",
 	"description",
@@ -52,6 +54,7 @@ export function initialValues(
 		houdiniVersion: tool?.houdiniVersion ?? "",
 		houdiniIcon: tool?.houdiniIcon ?? "",
 		previewUrl: tool?.previewUrl ?? "",
+		shortcut: tool?.shortcut ?? "",
 		summary: tool?.summary ?? "",
 		tags: tool?.tags.join(", ") ?? "",
 		description: tool?.description ?? "",

@@ -1,6 +1,11 @@
 @use "styles/variables" as *
 
 .intro
+  display: flex
+  flex-wrap: wrap
+  align-items: flex-end
+  justify-content: space-between
+  gap: 1rem
   margin-bottom: 2rem
 
   h1
@@ -9,6 +14,36 @@
 
   p
     color: var(--accent3)
+
+.bundle
+  display: flex
+  flex-direction: column
+  align-items: flex-end
+  gap: 0.35rem
+
+  > a:last-child
+    font-size: 0.8rem
+    color: var(--accent2)
+
+    &:hover
+      color: var(--foreground)
+
+  @media (max-width: $mobile-breakpoint)
+    align-items: flex-start
+
+.downloadAll
+  display: inline-flex
+  align-items: center
+  gap: 0.45rem
+  padding: 0.5rem 1.05rem
+  border-radius: var(--radius)
+  background: var(--brand)
+  color: var(--background)
+  font-weight: 600
+  font-size: 0.9rem
+
+  &:hover
+    background: var(--brand-hover)
 
 .filters
   display: flex

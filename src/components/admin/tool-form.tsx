@@ -252,6 +252,14 @@ export function ToolForm({ tool, returnTo, heading }: ToolFormProps) {
 									placeholder="20.5"
 								/>
 							</label>
+							<label className={styles.field}>
+								Suggested shortcut
+								<input
+									name="shortcut"
+									defaultValue={values.shortcut}
+									placeholder="Alt+Shift+N"
+								/>
+							</label>
 						</div>
 						<label className={styles.field}>
 							Change note
