@@ -27,6 +27,9 @@ model Tool {
   customIcon  Bytes?
   // Set alongside customIcon: marks that one exists and versions its URL.
   customIconDate DateTime?
+  // Media URL (an uploaded GIF, stored as animated WebP) of the tool in use,
+  // shown when hovering its card. Empty for none.
+  previewUrl  String       @default("")
   tags        String[]     @default([])
   // Drafts are only visible under /admin.
   isPublished Boolean      @default(false)

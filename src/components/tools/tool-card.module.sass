@@ -87,3 +87,25 @@
 
 .tag
   color: var(--accent3)
+
+// Hover preview (hover-preview-card.tsx): floats under the card at its width,
+// over whatever is below; pointer-events off so it never steals the hover.
+.preview
+  position: absolute
+  top: calc(100% + 0.5rem)
+  left: 0
+  right: 0
+  z-index: 2
+  padding: 0.35rem
+  background: var(--surface)
+  border: 1px solid var(--brand)
+  border-radius: var(--radius)
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5)
+  pointer-events: none
+
+  img
+    display: block
+    width: 100%
+    max-height: 22rem
+    object-fit: contain
+    border-radius: calc(var(--radius) - 2px)

@@ -1,51 +1,29 @@
 "use client";
 
-import { ImagePlus } from "lucide-react";
+import { Images } from "lucide-react";
 import { type ClipboardEvent, type DragEvent, useRef, useState } from "react";
-import { uploadMedia } from "@/server/actions/media-actions";
+import { MediaPicker } from "@/components/media/media-picker";
+import { useMediaUpload } from "@/components/media/use-media-upload";
+import type { LibraryMedia } from "@/server/actions/media-actions";
 import styles from "./form.module.sass";
 
 // Markdown alt text can't contain brackets; "|" is the size hint's separator
 // (lib/image-size.ts), left empty for the author to fill in.
-function markdownImage(url: string, alt: string): string {
+function markdownImage({ url, alt }: LibraryMedia): string {
 	return `![${alt.replace(/[[\]|]/g, "")}|](${url})`;
 }
 
 export function DescriptionField({ defaultValue }: { defaultValue: string }) {
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
-	const fileInputRef = useRef<HTMLInputElement>(null);
-	const [status, setStatus] = useState<string>();
-	const [isError, setIsError] = useState(false);
+	const [isPickerOpen, setIsPickerOpen] = useState(false);
+	// Pasted and dropped files go into the library and straight into the text.
+	const { upload, status, isError } = useMediaUpload(insertImage);
 
-	// Uploads one at a time, each inserted as its own block at the cursor.
-	async function upload(files: File[]) {
-		const images = files.filter((file) => file.type.startsWith("image/"));
-		if (images.length === 0) return;
-		setIsError(false);
-
-		for (const [i, file] of images.entries()) {
-			setStatus(
-				images.length > 1
-					? `Uploading ${file.name} (${i + 1}/${images.length})…`
-					: `Uploading ${file.name}…`,
-			);
-			const body = new FormData();
-			body.set("file", file);
-			const result = await uploadMedia(body);
-			if ("error" in result) {
-				setStatus(result.error);
-				setIsError(true);
-				return;
-			}
-			// Blank lines make it its own paragraph, spaced from the text around it.
-			insertAtCursor(`\n\n${markdownImage(result.url, result.alt)}\n\n`);
-		}
-		setStatus(undefined);
-	}
-
-	function insertAtCursor(text: string) {
+	// Blank lines make it its own paragraph, spaced from the text around it.
+	function insertImage(media: LibraryMedia) {
 		const el = textareaRef.current;
 		if (!el) return;
+		const text = `\n\n${markdownImage(media)}\n\n`;
 		el.setRangeText(text, el.selectionStart, el.selectionEnd, "end");
 		// setRangeText fires no input event; the form's draft autosave needs one.
 		el.dispatchEvent(new Event("input", { bubbles: true }));
@@ -75,22 +53,10 @@ export function DescriptionField({ defaultValue }: { defaultValue: string }) {
 				<button
 					type="button"
 					className={styles.inlineButton}
-					onClick={() => fileInputRef.current?.click()}>
-					<ImagePlus size={14} />
-					Add image/GIF
+					onClick={() => setIsPickerOpen(true)}>
+					<Images size={14} />
+					Insert image
 				</button>
-				{/* No name: picked files go through uploadMedia, not the tool form. */}
-				<input
-					ref={fileInputRef}
-					type="file"
-					accept="image/gif,image/png,image/jpeg,image/webp"
-					multiple
-					hidden
-					onChange={(e) => {
-						void upload([...(e.target.files ?? [])]);
-						e.target.value = "";
-					}}
-				/>
 			</div>
 			<textarea
 				ref={textareaRef}
@@ -103,8 +69,17 @@ export function DescriptionField({ defaultValue }: { defaultValue: string }) {
 			/>
 			<span className={isError ? styles.error : styles.hint}>
 				{status ??
-					"Markdown. Paste or drop images and GIFs to upload them (up to 20 MB). Limit their size after the |: |400 (width), |x300 (height), |400x300."}
+					"Markdown. Paste or drop images to upload. Size after the |: |400, |x300, |400x300."}
 			</span>
+			<MediaPicker
+				isOpen={isPickerOpen}
+				title="Insert image"
+				onClose={() => setIsPickerOpen(false)}
+				onSelect={(media) => {
+					setIsPickerOpen(false);
+					insertImage(media);
+				}}
+			/>
 		</div>
 	);
 }

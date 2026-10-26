@@ -60,10 +60,14 @@ export function HoudiniIconPicker({ defaultValue }: { defaultValue: string }) {
 			<input ref={inputRef} type="hidden" name="houdiniIcon" value={value} />
 			<div className={styles.current}>
 				{value ? (
-					<>
-						<Image src={houdiniIconSrc(value)} alt="" width={28} height={28} />
-						<code>{value}</code>
-					</>
+					// The name only as a tooltip; it's long and the icon says enough.
+					<Image
+						src={houdiniIconSrc(value)}
+						alt={value}
+						title={value}
+						width={28}
+						height={28}
+					/>
 				) : (
 					<span className={styles.none}>No Houdini icon</span>
 				)}

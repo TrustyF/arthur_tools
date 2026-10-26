@@ -24,7 +24,6 @@ import {
 	valuesFromForm,
 	writeDraft,
 } from "@/lib/tool-draft";
-import { LANGUAGE_LABEL, TOOL_LANGUAGES } from "@/lib/tool-language";
 import {
 	deleteTool,
 	saveTool,
@@ -34,6 +33,8 @@ import { CustomIconField } from "./custom-icon-field";
 import { DescriptionField } from "./description-field";
 import styles from "./form.module.sass";
 import { HoudiniIconPicker } from "./houdini-icon-picker";
+import { LanguageContextFields } from "./language-context-fields";
+import { PreviewField } from "./preview-field";
 
 // Long enough not to write on every keystroke, short enough to lose little.
 const DRAFT_DELAY_MS = 500;
@@ -53,9 +54,11 @@ type ToolFormProps = {
 	tool?: Omit<Tool, "customIcon">;
 	// Where save, cancel and delete lead; see lib/return-to.ts.
 	returnTo?: string | undefined;
+	// The page title, shown in the sticky bar beside the save button.
+	heading: string;
 };
 
-export function ToolForm({ tool, returnTo }: ToolFormProps) {
+export function ToolForm({ tool, returnTo, heading }: ToolFormProps) {
 	const router = useRouter();
 	const key = draftKey(tool?.id);
 	const saved = initialValues(tool);
@@ -125,22 +128,8 @@ export function ToolForm({ tool, returnTo }: ToolFormProps) {
 			{tool && <input type="hidden" name="id" value={tool.id} />}
 			{returnTo && <input type="hidden" name="returnTo" value={returnTo} />}
 
-			<div className={styles.actions}>
-				<button
-					type="submit"
-					className={styles.primary}
-					disabled={isPending || isNavigating}>
-					{isPending || isNavigating
-						? "Saving…"
-						: tool
-							? "Save changes"
-							: "Create tool"}
-				</button>
-				<Link
-					href={returnTo ?? DEFAULT_RETURN_PATH}
-					className={styles.secondary}>
-					Cancel
-				</Link>
+			<div className={styles.bar}>
+				<h1>{heading}</h1>
 				<label className={styles.checkbox}>
 					<input
 						type="checkbox"
@@ -169,6 +158,17 @@ export function ToolForm({ tool, returnTo }: ToolFormProps) {
 						Delete
 					</button>
 				)}
+				<Link
+					href={returnTo ?? DEFAULT_RETURN_PATH}
+					className={styles.secondary}>
+					Cancel
+				</Link>
+				<button
+					type="submit"
+					className={styles.primary}
+					disabled={isPending || isNavigating}>
+					{isPending || isNavigating ? "Saving…" : tool ? "Save" : "Create"}
+				</button>
 			</div>
 
 			{restored && (
@@ -191,114 +191,111 @@ export function ToolForm({ tool, returnTo }: ToolFormProps) {
 				<p className={styles.error}>{state.error}</p>
 			)}
 
-			<label className={styles.field}>
-				Change note
-				<input
-					name="changeNote"
-					maxLength={200}
-					defaultValue={values.changeNote}
-					placeholder={tool ? "What changed in the code?" : "Initial version"}
-				/>
-				<span className={styles.hint}>
-					Saved with a new version in the history whenever the code changes.
-				</span>
-			</label>
+			<div className={styles.columns}>
+				<div className={styles.side}>
+					<div className={styles.nameRow}>
+						<label className={styles.field}>
+							Name
+							<input name="name" defaultValue={values.name} required />
+						</label>
+						<LanguageContextFields
+							defaultLanguage={values.language}
+							defaultContext={values.context}
+						/>
+					</div>
 
-			<div className={styles.row}>
-				<label className={styles.field}>
-					Name
-					<input name="name" defaultValue={values.name} required />
-				</label>
-				<label className={styles.field}>
-					Slug
-					<input
-						name="slug"
-						defaultValue={values.slug}
-						placeholder="Generated from the name"
-					/>
-				</label>
-			</div>
+					<div className={styles.row}>
+						<div className={styles.field}>
+							Houdini icon
+							<HoudiniIconPicker defaultValue={values.houdiniIcon} />
+						</div>
+						<label className={styles.field}>
+							Tags
+							<input
+								name="tags"
+								defaultValue={values.tags}
+								placeholder="sop, attributes, cleanup"
+							/>
+						</label>
+					</div>
 
-			<div className={styles.row}>
-				<label className={styles.field}>
-					Language
-					<select name="language" defaultValue={values.language}>
-						{TOOL_LANGUAGES.map((lang) => (
-							<option key={lang} value={lang}>
-								{LANGUAGE_LABEL[lang]}
-							</option>
-						))}
-					</select>
-				</label>
-				<label className={styles.field}>
-					Context
-					<input
-						name="context"
-						defaultValue={values.context}
-						placeholder="Attribute Wrangle (points), Shelf tool…"
-					/>
-				</label>
-				<label className={styles.field}>
-					Min. Houdini version
-					<input
-						name="houdiniVersion"
-						defaultValue={values.houdiniVersion}
-						placeholder="20.5"
-					/>
-				</label>
-			</div>
+					<label className={styles.field}>
+						Summary
+						<input
+							name="summary"
+							defaultValue={values.summary}
+							maxLength={300}
+						/>
+					</label>
 
-			<div className={styles.row}>
-				<div className={styles.field}>
-					Houdini icon
-					<HoudiniIconPicker defaultValue={values.houdiniIcon} />
-				</div>
-				<div className={styles.field}>
-					Custom image
-					<CustomIconField
-						{...(tool?.customIconDate
-							? {
-									current: {
-										slug: tool.slug,
-										customIconDate: tool.customIconDate,
-									},
+					<DescriptionField defaultValue={values.description} />
+
+					<PreviewField defaultValue={values.previewUrl} />
+
+					{/* Closed fields still submit; they're just rarely changed. */}
+					<details className={styles.more}>
+						<summary>More</summary>
+						<div className={styles.row}>
+							<label className={styles.field}>
+								Slug
+								<input
+									name="slug"
+									defaultValue={values.slug}
+									placeholder="From the name"
+								/>
+							</label>
+							<label className={styles.field}>
+								Min. Houdini version
+								<input
+									name="houdiniVersion"
+									defaultValue={values.houdiniVersion}
+									placeholder="20.5"
+								/>
+							</label>
+						</div>
+						<label className={styles.field}>
+							Change note
+							<input
+								name="changeNote"
+								maxLength={200}
+								defaultValue={values.changeNote}
+								placeholder={
+									tool ? "What changed in the code?" : "Initial version"
 								}
-							: {})}
-					/>
-					<span className={styles.hint}>
-						Overrides the Houdini icon. Resized to 128px.
-					</span>
+							/>
+							<span className={styles.hint}>
+								Recorded in the history when the code changes.
+							</span>
+						</label>
+						<div className={styles.field}>
+							Custom icon
+							<CustomIconField
+								{...(tool?.customIconDate
+									? {
+											current: {
+												slug: tool.slug,
+												customIconDate: tool.customIconDate,
+											},
+										}
+									: {})}
+							/>
+							<span className={styles.hint}>Overrides the Houdini icon.</span>
+						</div>
+					</details>
 				</div>
+
+				<label className={`${styles.field} ${styles.codeField}`}>
+					Code
+					<textarea
+						name="code"
+						className={styles.code}
+						defaultValue={values.code}
+						onKeyDown={insertTab}
+						spellCheck={false}
+						required
+					/>
+				</label>
 			</div>
-
-			<label className={styles.field}>
-				Summary
-				<input name="summary" defaultValue={values.summary} maxLength={300} />
-			</label>
-
-			<label className={styles.field}>
-				Tags
-				<input
-					name="tags"
-					defaultValue={values.tags}
-					placeholder="sop, attributes, cleanup"
-				/>
-				<span className={styles.hint}>Comma-separated</span>
-			</label>
-
-			<DescriptionField defaultValue={values.description} />
-
-			<label className={styles.field}>
-				Code
-				<textarea
-					name="code"
-					className={styles.code}
-					defaultValue={values.code}
-					onKeyDown={insertTab}
-					spellCheck={false}
-					required
-				/>
-			</label>
 		</form>
 	);
 }

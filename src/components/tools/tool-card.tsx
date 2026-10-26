@@ -1,6 +1,7 @@
 import type { Tool } from "@prisma/client";
 import { Download, Heart, Pencil } from "lucide-react";
 import Link from "next/link";
+import { HoverPreviewCard } from "./hover-preview-card";
 import styles from "./tool-card.module.sass";
 import { ToolIcon } from "./tool-icon";
 
@@ -14,6 +15,7 @@ type ToolCardProps = {
 		| "houdiniIcon"
 		| "customIconDate"
 		| "isPinned"
+		| "previewUrl"
 	>;
 	// Download and Copy button uses combined (ToolStats.downloads).
 	downloads: number;
@@ -25,7 +27,7 @@ type ToolCardProps = {
 // .titleLink) and the edit link sits above it.
 export function ToolCard({ tool, downloads, editHref }: ToolCardProps) {
 	return (
-		<article className={styles.card}>
+		<HoverPreviewCard previewUrl={tool.previewUrl}>
 			<div className={styles.name}>
 				<ToolIcon tool={tool} size={24} />
 				<h2>
@@ -69,6 +71,6 @@ export function ToolCard({ tool, downloads, editHref }: ToolCardProps) {
 					</span>
 				)}
 			</div>
-		</article>
+		</HoverPreviewCard>
 	);
 }

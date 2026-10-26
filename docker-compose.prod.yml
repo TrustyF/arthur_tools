@@ -22,7 +22,7 @@ services:
       firewall-init:
         condition: service_completed_successfully
 
-  # Same storage as the app, so cleanup_media deletes from the R2 bucket.
+  # Same storage as the app, for any job that touches media.
   maintenance:
     environment:
       MEDIA_STORAGE_DRIVER: r2

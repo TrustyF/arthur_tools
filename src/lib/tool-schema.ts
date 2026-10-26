@@ -9,6 +9,15 @@ const houdiniIcon = type("string <= 100").narrow(
 		ctx.mustBe("a Houdini icon name like SOP_null"),
 );
 
+// Set by the editor's upload button: a media URL (see media-storage.ts), so
+// site-relative in dev and the R2 bucket's https URL in production.
+const previewUrl = type("string <= 500").narrow(
+	(url, ctx) =>
+		url === "" ||
+		/^(\/|https:\/\/)\S+$/.test(url) ||
+		ctx.mustBe("an uploaded image URL"),
+);
+
 export const toolInput = type({
 	name: "0 < string <= 120",
 	slug: "0 < string <= 120",
@@ -19,6 +28,7 @@ export const toolInput = type({
 	houdiniVersion: "string <= 20",
 	code: "string > 0",
 	houdiniIcon,
+	previewUrl,
 	tags: "string[]",
 	isPublished: "boolean",
 	isPinned: "boolean",
@@ -51,6 +61,7 @@ export function toolFromFormData(formData: FormData): unknown {
 		// Not trimmed: leading indentation is meaningful in Python.
 		code: raw(formData, "code").replace(/\s+$/, ""),
 		houdiniIcon: field(formData, "houdiniIcon"),
+		previewUrl: field(formData, "previewUrl"),
 		tags: [
 			...new Set(
 				field(formData, "tags")

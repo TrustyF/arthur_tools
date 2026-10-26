@@ -17,6 +17,7 @@ export default async function NavBar() {
 					<Link href="/?lang=VEX">VEX</Link>
 					<Link href="/help">Help</Link>
 					{isAdmin && <Link href="/admin">Admin</Link>}
+					{isAdmin && <Link href="/admin/media">Media</Link>}
 					{session && (
 						<form
 							action={async () => {

@@ -43,6 +43,7 @@ export default async function Home(props: PageProps<"/">) {
 			houdiniIcon: true,
 			customIconDate: true,
 			isPinned: true,
+			previewUrl: true,
 			stats: { select: { downloads: true } },
 		},
 	});

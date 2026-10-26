@@ -37,7 +37,7 @@ services:
         condition: service_healthy
 
   # One-off jobs, never started by `docker compose up`:
-  #   docker compose run --rm maintenance npm run cleanup_media [-- --apply]
+  #   docker compose run --rm maintenance npm run create_admin
   maintenance:
     profiles: ["tools"]
     build:
