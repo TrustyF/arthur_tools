@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./styles/globals.sass";
 import type React from "react";
+import { auth } from "@/auth";
+import SessionRecorder from "@/components/analytics/session-recorder";
 import NavBar from "@/components/navbar/nav-bar";
 import { fontVariables } from "./fonts";
 
@@ -17,16 +19,20 @@ export const metadata: Metadata = {
 	metadataBase: new URL(SITE_URL),
 };
 
-export default function RootLayout({
+export default async function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
+	// already dynamic - NavBar reads the session too
+	const session = await auth();
+
 	return (
 		<html lang="en" className={fontVariables}>
 			<body>
 				<NavBar />
 				<main>{children}</main>
+				<SessionRecorder isAdmin={session?.user?.role === "ADMIN"} />
 			</body>
 		</html>
 	);

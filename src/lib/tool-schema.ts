@@ -18,17 +18,6 @@ const previewUrl = type("string <= 500").narrow(
 		ctx.mustBe("an uploaded image URL"),
 );
 
-// Houdini's key notation: up to three modifiers, then a letter, digit or F-key.
-export const SHORTCUT_PATTERN =
-	/^((Ctrl|Alt|Shift|Cmd)\+){0,3}([A-Z0-9]|F([1-9]|1[0-2]))$/;
-
-const shortcut = type("string <= 40").narrow(
-	(key, ctx) =>
-		key === "" ||
-		SHORTCUT_PATTERN.test(key) ||
-		ctx.mustBe("a key like Alt+Shift+N"),
-);
-
 export const toolInput = type({
 	name: "0 < string <= 120",
 	slug: "0 < string <= 120",
@@ -40,7 +29,7 @@ export const toolInput = type({
 	code: "string > 0",
 	houdiniIcon,
 	previewUrl,
-	shortcut,
+	shortcut: "string <= 40",
 	tags: "string[]",
 	isPublished: "boolean",
 	isPinned: "boolean",
@@ -56,21 +45,6 @@ function raw(formData: FormData, key: string): string {
 
 function field(formData: FormData, key: string): string {
 	return raw(formData, key).trim();
-}
-
-// "alt + shift + n" → "Alt+Shift+N", so the pattern check is about the keys,
-// not their spelling.
-function normalizeShortcut(value: string): string {
-	return value
-		.split("+")
-		.map((part) => part.trim())
-		.filter(Boolean)
-		.map((part) =>
-			part.length === 1
-				? part.toUpperCase()
-				: part.charAt(0).toUpperCase() + part.slice(1).toLowerCase(),
-		)
-		.join("+");
 }
 
 // Raw form fields → candidate object for toolInput. A blank slug falls back
@@ -89,7 +63,7 @@ export function toolFromFormData(formData: FormData): unknown {
 		code: raw(formData, "code").replace(/\s+$/, ""),
 		houdiniIcon: field(formData, "houdiniIcon"),
 		previewUrl: field(formData, "previewUrl"),
-		shortcut: normalizeShortcut(field(formData, "shortcut")),
+		shortcut: field(formData, "shortcut"),
 		tags: [
 			...new Set(
 				field(formData, "tags")
