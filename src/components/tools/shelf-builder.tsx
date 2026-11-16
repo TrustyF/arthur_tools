@@ -29,10 +29,9 @@ import {
 	useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import type { Tool, ToolLanguage } from "@prisma/client";
+import type { Tool } from "@prisma/client";
 import { Download, Heart, X } from "lucide-react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
-import { LANGUAGE_LABEL, TOOL_LANGUAGES } from "@/lib/tool-language";
 import styles from "./shelf-builder.module.sass";
 import { ToolIcon } from "./tool-icon";
 
@@ -183,17 +182,6 @@ export function ShelfBuilder({ tools }: ShelfBuilderProps) {
 		);
 	}
 
-	// Appends the matching tools that aren't on the shelf yet, in page order.
-	function addAll(language?: ToolLanguage) {
-		setPicked((current) => [
-			...current,
-			...tools
-				.filter((tool) => !language || tool.language === language)
-				.map((tool) => tool.slug)
-				.filter((slug) => !current.includes(slug)),
-		]);
-	}
-
 	function onDragStart({ active }: DragStartEvent) {
 		beforeDrag.current = picked;
 		setDrag(dragOf(active));
@@ -257,20 +245,13 @@ export function ShelfBuilder({ tools }: ShelfBuilderProps) {
 			onDragEnd={onDragEnd}
 			onDragCancel={onDragCancel}>
 			<div className={styles.toolbar}>
-				<div className={styles.quick}>
-					<span>Add</span>
-					<button type="button" onClick={() => addAll()}>
-						All
-					</button>
-					{TOOL_LANGUAGES.map((lang) => (
-						<button key={lang} type="button" onClick={() => addAll(lang)}>
-							{LANGUAGE_LABEL[lang]}
-						</button>
-					))}
-					<button type="button" onClick={() => setPicked([])}>
-						Clear
-					</button>
-				</div>
+				<button
+					type="button"
+					className={styles.clear}
+					onClick={() => setPicked([])}
+					disabled={count === 0}>
+					Clear
+				</button>
 				{count > 0 ? (
 					// Plain <a>: a file download, not a page to prefetch.
 					<a

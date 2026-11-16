@@ -8,24 +8,20 @@
   gap: 1rem
   margin-bottom: 1.25rem
 
-.quick
-  display: flex
-  align-items: center
-  gap: 1.25rem
+.clear
+  padding: 0
+  background: none
+  border: none
   font-size: 0.9rem
+  color: var(--accent3)
+  cursor: pointer
 
-  span
+  &:hover
+    color: var(--foreground)
+
+  &:disabled
     color: var(--accent1)
-
-  button
-    padding: 0
-    background: none
-    border: none
-    color: var(--accent3)
-    cursor: pointer
-
-    &:hover
-      color: var(--foreground)
+    cursor: default
 
 .download
   display: inline-flex

@@ -1,5 +1,5 @@
 import type { Prisma } from "@prisma/client";
-import { Download } from "lucide-react";
+import { Hammer } from "lucide-react";
 import Link from "next/link";
 import { auth } from "@/auth";
 import { SHOW_BUNDLE } from "@/lib/bundle";
@@ -57,14 +57,10 @@ export default async function Home(props: PageProps<"/">) {
 					<p>Python scripts and VEX snippets for Houdini.</p>
 				</div>
 				{SHOW_BUNDLE && (
-					<div className={styles.bundle}>
-						{/* Plain <a>: a file download, not a page to prefetch. */}
-						<a href="/download" className={styles.downloadAll} download>
-							<Download size={15} aria-hidden />
-							Download all
-						</a>
-						<Link href="/shelf">Select tools</Link>
-					</div>
+					<Link href="/shelf" className={styles.buildShelf}>
+						<Hammer size={15} aria-hidden />
+						Build shelf
+					</Link>
 				)}
 			</section>
 

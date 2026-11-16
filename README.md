@@ -50,6 +50,13 @@ The Husky pre-commit hook runs lint and typecheck.
 The site runs in `~/arthur_tools` with `docker-compose.prod.yml` layered on (set by `.env`'s `COMPOSE_FILE`), behind a Cloudflare Tunnel. Description images go to an R2 bucket (`R2_*` in `.env`).
 
 - **Deploy:** push to `main`, then run `scripts/deploy.sh` on thinkguy. Before a deploy with migrations, dump the database into `backups/`.
+- **Backups:** `scripts/backup-database.sh` runs nightly from thinkguy's crontab and uploads a `pg_dump` to the R2 backup bucket (`R2_BACKUP_*` in `.env`). It keeps the newest 5, one per week for 3 weeks, one per month for 2 months, and one per year. Log: `cron-logs/backup_database.log`.
+
+  ```
+  30 3 * * * bash /home/arthur/arthur_tools/scripts/backup-database.sh >> /home/arthur/arthur_tools/cron-logs/backup_database.log 2>&1
+  ```
+
+  To restore, download a `db/<date>.dump` from the bucket into `backups/`, then: `sudo docker compose exec -T db pg_restore -U <POSTGRES_USER> -d <POSTGRES_DB> --clean --if-exists --no-owner --no-privileges < backups/<file>.dump`
 - **Images:** uploads live in the media library (`/admin/media`) and stay until deleted there. Deleting is refused while a tool still uses the image.
 
 Colors live only as tokens in `src/app/styles/globals.sass`'s `:root`. `lint:colors` fails on hardcoded colors anywhere else.
