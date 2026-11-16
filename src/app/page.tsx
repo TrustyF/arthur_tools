@@ -41,7 +41,6 @@ export default async function Home(props: PageProps<"/">) {
 			slug: true,
 			name: true,
 			summary: true,
-			tags: true,
 			houdiniIcon: true,
 			customIconDate: true,
 			isPinned: true,
@@ -64,7 +63,7 @@ export default async function Home(props: PageProps<"/">) {
 							<Download size={15} aria-hidden />
 							Download all
 						</a>
-						<Link href="/help#bundle">One shelf, every tool</Link>
+						<Link href="/shelf">Select tools</Link>
 					</div>
 				)}
 			</section>
@@ -87,7 +86,7 @@ export default async function Home(props: PageProps<"/">) {
 			{tools.length === 0 ? (
 				<p className={styles.empty}>No tools here yet.</p>
 			) : (
-				<div className={styles.grid}>
+				<div className={styles.list}>
 					{tools.map((tool) => (
 						<ToolCard
 							key={tool.id}

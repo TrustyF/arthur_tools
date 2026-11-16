@@ -14,6 +14,8 @@ npm run dev
 
 Open http://localhost:3000. Sign in at `/login`, then add tools from `/admin`.
 
+To work on a copy of production's data, run `bash scripts/pull-prod-db.sh`. It dumps thinkguy's database over SSH, saves the local database to `backups/` first, then restores production over it. You then sign in with production's admin account. Images still load from the R2 CDN, while dev uploads stay in the local `data/` folder.
+
 ## Icons
 
 Each tool can show a Houdini icon, a custom image, or nothing. A custom image takes priority.

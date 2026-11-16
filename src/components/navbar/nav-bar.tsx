@@ -13,8 +13,6 @@ export default async function NavBar() {
 					arthur<span>/tools</span>
 				</Link>
 				<div className={styles.links}>
-					<Link href="/?lang=PYTHON">Python</Link>
-					<Link href="/?lang=VEX">VEX</Link>
 					<Link href="/help">Help</Link>
 					{isAdmin && <Link href="/admin">Admin</Link>}
 					{isAdmin && <Link href="/admin/media">Media</Link>}

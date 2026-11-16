@@ -92,14 +92,15 @@ def add_wrangle(file_name, node_type, run_over=None):
     node.setCurrent(True, clear_all_selected=True)
 `;
 
-const INSTALL_TXT = `arthur/tools: every published tool, on one Houdini shelf.
+const INSTALL_TXT = `arthur/tools: Houdini tools on one shelf.
 
 1. Extract this zip into your Houdini folder (e.g. Documents/houdini22.0).
    It adds packages/${NAME}.json and the packages/${NAME} folder.
 2. Restart Houdini.
 3. On any shelf set, click the + tab > Shelves > Arthur tools.
 
-To update, delete packages/${NAME} and extract a fresh download the same way.
+To update or change which tools are on it, delete packages/${NAME} and
+extract a fresh download the same way.
 `;
 
 function xmlAttr(value: string): string {

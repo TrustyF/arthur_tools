@@ -1,5 +1,6 @@
 import { Info } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { CopyButton } from "@/components/tools/copy-button";
 import { SHOW_BUNDLE } from "@/lib/bundle";
@@ -55,7 +56,7 @@ export default function HelpPage() {
 				folder to keep one copy you can update.
 			</p>
 			<nav className={styles.jump} aria-label="On this page">
-				{SHOW_BUNDLE && <a href="#bundle">All tools at once</a>}
+				{SHOW_BUNDLE && <a href="#bundle">Shelf package</a>}
 				<a href="#python">Python scripts</a>
 				<a href="#vex">VEX snippets</a>
 				<a href="#folder">Your Houdini folder</a>
@@ -63,14 +64,15 @@ export default function HelpPage() {
 
 			{SHOW_BUNDLE && (
 				<section id="bundle">
-					<h2>All tools at once</h2>
-					<Method title="One shelf, every tool">
+					<h2>Shelf package</h2>
+					<Method title="Install">
 						<ol className={styles.steps}>
 							<li>
 								<a href="/download" download>
 									Download all tools
 								</a>{" "}
-								(<code>arthur_tools.zip</code>).
+								(<code>arthur_tools.zip</code>), or{" "}
+								<Link href="/shelf">select tools</Link> to download.
 							</li>
 							<li>
 								Extract it into your <a href="#folder">Houdini folder</a>. It
@@ -87,6 +89,7 @@ export default function HelpPage() {
 							VEX buttons add a wrangle with the snippet to the network
 							you&apos;re in, wired to the selected node. To update, delete{" "}
 							<code>packages/arthur_tools</code> and extract a fresh download.
+							The same goes for changing which tools are on it.
 						</Note>
 					</Method>
 				</section>

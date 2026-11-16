@@ -1,16 +1,25 @@
+@use "../../app/styles/variables" as *
+
+// Home list entry (home .list): icon spanning both lines, name over summary,
+// download count. No frame or dividers, only a hover highlight.
 .card
   position: relative
-  display: flex
-  flex-direction: column
-  gap: 0.5rem
-  padding: 1rem 1.25rem
-  background: var(--surface)
-  border: 1px solid var(--surface-border)
+  display: grid
+  grid-template-columns: auto minmax(0, 1fr) auto
+  // Two explicit rows so the icon and count can span them with 1 / -1.
+  grid-template-rows: auto auto
+  align-items: center
+  gap: 0.1rem 0.75rem
+  padding: 0.45rem 0.75rem
   border-radius: var(--radius)
-  transition: border-color 0.15s
+  transition: background-color 0.15s
 
   &:hover
-    border-color: var(--brand)
+    background: var(--brand-muted)
+
+  // Room for the edit button, only when there is one.
+  &:has(.edit)
+    padding-right: 2.75rem
 
 // Covers the whole card so it stays clickable as one link.
 .titleLink::after
@@ -18,20 +27,21 @@
   position: absolute
   inset: 0
 
-// Top-right, out of the layout; z-index puts it above .titleLink's overlay.
+// Right edge, out of the layout; z-index puts it above .titleLink's overlay.
 // Shown on card hover or keyboard focus, and always on touch screens (no hover).
 .edit
   position: absolute
-  top: 0.75rem
-  right: 0.75rem
+  top: 50%
+  right: 0.5rem
   z-index: 1
   display: inline-flex
-  padding: 0.3rem
+  padding: 0.2rem
   background: var(--surface)
   border: 1px solid var(--surface-border)
   border-radius: var(--radius)
   color: var(--accent3)
   opacity: 0
+  transform: translateY(-50%)
   transition: opacity 0.15s
 
   &:hover
@@ -44,57 +54,55 @@
   @media (hover: none)
     opacity: 1
 
+.icon
+  grid-row: 1 / -1
+  grid-column: 1
+
 .name
+  grid-row: 1
+  grid-column: 2
   display: flex
   align-items: center
-  gap: 0.6rem
-  // Keeps long names clear of the .edit button that appears on hover.
-  padding-right: 2rem
+  gap: 0.5rem
+  min-width: 0
 
   h2
-    font-size: 1.05rem
+    overflow: hidden
+    font-size: 0.95rem
+    font-weight: 500
+    white-space: nowrap
+    text-overflow: ellipsis
 
 .pin
   flex-shrink: 0
   color: var(--brand)
 
-// Pinned to the card's bottom so download counts line up across a row.
-.footer
-  display: flex
-  align-items: flex-end
-  justify-content: space-between
-  gap: 1rem
-  margin-top: auto
-
 .downloads
+  grid-row: 1 / -1
+  grid-column: 3
   display: inline-flex
   align-items: center
   gap: 0.3rem
-  flex-shrink: 0
   font-size: 0.8rem
   font-variant-numeric: tabular-nums
   color: var(--accent2)
 
 .summary
-  font-size: 0.9rem
-
-.meta
-  display: flex
-  flex-wrap: wrap
-  gap: 0.75rem
-  font-size: 0.8rem
-  color: var(--accent2)
-
-.tag
+  grid-row: 2
+  grid-column: 2
+  overflow: hidden
+  font-size: 0.85rem
+  white-space: nowrap
+  text-overflow: ellipsis
   color: var(--accent3)
 
-// Hover preview (hover-preview-card.tsx): floats under the card at its width,
+// Hover preview (hover-preview-card.tsx): floats under the row's right side,
 // over whatever is below; pointer-events off so it never steals the hover.
 .preview
   position: absolute
   top: calc(100% + 0.5rem)
-  left: 0
   right: 0
+  width: min(24rem, 100%)
   z-index: 2
   padding: 0.35rem
   background: var(--surface)

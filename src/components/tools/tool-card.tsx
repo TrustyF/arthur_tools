@@ -11,7 +11,6 @@ type ToolCardProps = {
 		| "slug"
 		| "name"
 		| "summary"
-		| "tags"
 		| "houdiniIcon"
 		| "customIconDate"
 		| "isPinned"
@@ -28,8 +27,8 @@ type ToolCardProps = {
 export function ToolCard({ tool, downloads, editHref }: ToolCardProps) {
 	return (
 		<HoverPreviewCard previewUrl={tool.previewUrl}>
+			<ToolIcon tool={tool} size={36} className={styles.icon} />
 			<div className={styles.name}>
-				<ToolIcon tool={tool} size={24} />
 				<h2>
 					<Link href={`/tools/${tool.slug}`} className={styles.titleLink}>
 						{tool.name}
@@ -53,24 +52,15 @@ export function ToolCard({ tool, downloads, editHref }: ToolCardProps) {
 					<Pencil size={14} />
 				</Link>
 			)}
+			{downloads > 0 && (
+				<span
+					className={styles.downloads}
+					title={`${downloads} ${downloads === 1 ? "download" : "downloads"}`}>
+					<Download size={13} aria-hidden />
+					{downloads}
+				</span>
+			)}
 			{tool.summary && <p className={styles.summary}>{tool.summary}</p>}
-			<div className={styles.footer}>
-				<div className={styles.meta}>
-					{tool.tags.map((tag) => (
-						<span key={tag} className={styles.tag}>
-							#{tag}
-						</span>
-					))}
-				</div>
-				{downloads > 0 && (
-					<span
-						className={styles.downloads}
-						title={`${downloads} ${downloads === 1 ? "download" : "downloads"}`}>
-						<Download size={13} aria-hidden />
-						{downloads}
-					</span>
-				)}
-			</div>
 		</HoverPreviewCard>
 	);
 }

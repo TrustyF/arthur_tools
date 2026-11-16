@@ -2,12 +2,21 @@ import { db } from "@/server/db/client";
 import { BUNDLE_FILE_NAME, buildBundle } from "@/server/tools/tool-bundle";
 import { recordToolStat, shouldCount } from "@/server/tools/tool-stats";
 
-// Every published tool as one Houdini package with its own shelf; see
-// server/tools/tool-bundle.ts for the layout and the /help#bundle section.
+// Published tools as one Houdini package with its own shelf (tool-bundle.ts).
+// ?tools=slug-a,slug-b (from /shelf) limits it to those tools, in that order.
 export async function GET(req: Request) {
-	const tools = await db.tool.findMany({
-		where: { isPublished: true },
-		// Shelf order: pinned first, then alphabetical.
+	const picked = new URL(req.url).searchParams.get("tools");
+	const slugs = picked
+		?.split(",")
+		.map((slug) => slug.trim())
+		.filter(Boolean);
+	if (slugs && slugs.length === 0) {
+		return new Response("No tools picked.", { status: 400 });
+	}
+
+	const found = await db.tool.findMany({
+		where: { isPublished: true, ...(slugs ? { slug: { in: slugs } } : {}) },
+		// Order for the full download: pinned first, then alphabetical.
 		orderBy: [{ isPinned: "desc" }, { name: "asc" }],
 		select: {
 			id: true,
@@ -22,6 +31,16 @@ export async function GET(req: Request) {
 			shortcut: true,
 		},
 	});
+
+	// Picked tools keep the order they were given in.
+	const tools = slugs
+		? found.toSorted((a, b) => slugs.indexOf(a.slug) - slugs.indexOf(b.slug))
+		: found;
+
+	// Unknown or unpublished slugs only: nothing to put on the shelf.
+	if (tools.length === 0) {
+		return new Response("None of those tools exist.", { status: 404 });
+	}
 
 	// Taking the bundle takes every tool in it, so each one's count goes up.
 	if (await shouldCount(req)) {

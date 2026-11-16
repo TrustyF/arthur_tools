@@ -48,34 +48,32 @@
 .filters
   display: flex
   align-items: center
-  gap: 0.5rem
+  gap: 1.25rem
   margin-bottom: 1.25rem
 
   a
-    padding: 0.3rem 0.8rem
-    border-radius: 999px
-    border: 1px solid var(--surface-border)
-    font-size: 0.85rem
+    font-size: 0.9rem
+    color: var(--accent3)
 
     &:hover
-      border-color: var(--accent1)
+      color: var(--foreground)
 
   .active
-    border-color: var(--brand)
-    background: var(--brand-muted)
-    color: var(--foreground)
+    color: var(--brand)
 
 .tagFilter
   font-size: 0.85rem
   color: var(--accent3)
 
-.grid
+// Pulled out by the rows' padding so their text lines up with the heading.
+.list
   display: grid
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr))
-  gap: 1rem
+  grid-template-columns: repeat(2, minmax(0, 1fr))
+  column-gap: 1rem
+  margin-inline: -0.75rem
 
   @media (max-width: $mobile-breakpoint)
-    grid-template-columns: 1fr
+    grid-template-columns: minmax(0, 1fr)
 
 .empty
   color: var(--accent1)
