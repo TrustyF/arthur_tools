@@ -21,6 +21,8 @@ export default function config(phase: string): NextConfig {
 		reactCompiler: true,
 		...(deploymentId ? { deploymentId } : {}),
 		experimental: {
+			// Set by `next upgrade --agent=security` (16.4.3 → 16.4.6).
+			agentUpgrade: "security",
 			serverActions: {
 				// 1MB default is too small for uploads: icons cap at 5MB (process-icon.ts),
 				// description GIFs at 20MB (process-media.ts).
