@@ -1,10 +1,12 @@
 import { CircleHelp, Pencil } from "lucide-react";
+import type { ToolLanguage } from "@prisma/client";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { auth } from "@/auth";
 import { editHref } from "@/lib/return-to";
+import { AssetBlock } from "@/components/tools/asset-block";
 import { CodeBlock } from "@/components/tools/code-block";
 import { Description } from "@/components/tools/description";
 import { LanguageBadge } from "@/components/tools/language-badge";
@@ -17,6 +19,12 @@ import {
 } from "@/lib/tool-language";
 import { db } from "@/server/db/client";
 import styles from "./tool.module.sass";
+
+const HOW_TO: Record<ToolLanguage, string> = {
+	PYTHON: "How to add this to a shelf",
+	VEX: "How to use this in a wrangle",
+	HDA: "How to install an HDA",
+};
 
 // Shared by generateMetadata and the page so the row is fetched once per request.
 const getTool = cache((slug: string) =>
@@ -124,17 +132,23 @@ export default async function ToolPage(props: PageProps<"/tools/[slug]">) {
 			<div className={styles.code}>
 				<Link href={HELP_ANCHOR[tool.language]} className={styles.howTo}>
 					<CircleHelp size={14} />
-					{tool.language === "PYTHON"
-						? "How to add this to a shelf"
-						: "How to use this in a wrangle"}
+					{HOW_TO[tool.language]}
 				</Link>
-				<CodeBlock
-					code={tool.code}
-					lang={LANGUAGE_HIGHLIGHT_ID[tool.language]}
-					fileName={fileName}
-					downloadHref={`/tools/${tool.slug}/raw`}
-					eventsUrl={eventsUrl}
-				/>
+				{tool.language === "HDA" ? (
+					<AssetBlock
+						fileName={tool.assetFileName}
+						size={tool.assetSize}
+						downloadHref={`/tools/${tool.slug}/raw`}
+					/>
+				) : (
+					<CodeBlock
+						code={tool.code}
+						lang={LANGUAGE_HIGHLIGHT_ID[tool.language]}
+						fileName={fileName}
+						downloadHref={`/tools/${tool.slug}/raw`}
+						eventsUrl={eventsUrl}
+					/>
+				)}
 			</div>
 			<ViewTracker eventsUrl={eventsUrl} />
 		</article>

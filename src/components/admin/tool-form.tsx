@@ -1,6 +1,6 @@
 "use client";
 
-import type { Tool } from "@prisma/client";
+import type { Tool, ToolLanguage } from "@prisma/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -24,6 +24,7 @@ import {
 	valuesFromForm,
 	writeDraft,
 } from "@/lib/tool-draft";
+import { parseLanguage } from "@/lib/tool-language";
 import {
 	deleteTool,
 	saveTool,
@@ -32,6 +33,7 @@ import {
 import { CustomIconField } from "./custom-icon-field";
 import { DescriptionField } from "./description-field";
 import styles from "./form.module.sass";
+import { HdaFileField } from "./hda-file-field";
 import { HoudiniIconPicker } from "./houdini-icon-picker";
 import { LanguageContextFields } from "./language-context-fields";
 import { PreviewField } from "./preview-field";
@@ -115,6 +117,9 @@ export function ToolForm({ tool, returnTo, heading }: ToolFormProps) {
 	const isNavigating = state !== undefined && "savedTo" in state;
 
 	const values = restored?.values ?? saved;
+	const [language, setLanguage] = useState<ToolLanguage>(
+		() => parseLanguage(values.language) ?? "VEX",
+	);
 
 	return (
 		<form
@@ -181,6 +186,7 @@ export function ToolForm({ tool, returnTo, heading }: ToolFormProps) {
 						onClick={() => {
 							removeDraft(key);
 							setRestored(undefined);
+							setLanguage(parseLanguage(saved.language) ?? "VEX");
 						}}>
 						Discard
 					</button>
@@ -199,7 +205,8 @@ export function ToolForm({ tool, returnTo, heading }: ToolFormProps) {
 							<input name="name" defaultValue={values.name} required />
 						</label>
 						<LanguageContextFields
-							defaultLanguage={values.language}
+							language={language}
+							onLanguageChange={setLanguage}
 							defaultContext={values.context}
 						/>
 					</div>
@@ -292,17 +299,27 @@ export function ToolForm({ tool, returnTo, heading }: ToolFormProps) {
 					</details>
 				</div>
 
-				<label className={`${styles.field} ${styles.codeField}`}>
-					Code
-					<textarea
-						name="code"
-						className={styles.code}
-						defaultValue={values.code}
-						onKeyDown={insertTab}
-						spellCheck={false}
-						required
+				{language === "HDA" ? (
+					<HdaFileField
+						current={
+							tool?.assetKey
+								? { fileName: tool.assetFileName, size: tool.assetSize }
+								: undefined
+						}
 					/>
-				</label>
+				) : (
+					<label className={`${styles.field} ${styles.codeField}`}>
+						Code
+						<textarea
+							name="code"
+							className={styles.code}
+							defaultValue={values.code}
+							onKeyDown={insertTab}
+							spellCheck={false}
+							required
+						/>
+					</label>
+				)}
 			</div>
 		</form>
 	);

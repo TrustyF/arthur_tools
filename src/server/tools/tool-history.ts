@@ -13,7 +13,15 @@ export const getToolHistory = cache((slug: string) =>
 			language: true,
 			versions: {
 				orderBy: { number: "asc" },
-				select: { number: true, code: true, note: true, createDate: true },
+				select: {
+					number: true,
+					code: true,
+					note: true,
+					createDate: true,
+					// HDAs: the version's file (empty when it only changed details).
+					assetFileName: true,
+					assetSize: true,
+				},
 			},
 		},
 	}),

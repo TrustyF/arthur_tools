@@ -6,12 +6,13 @@ import styles from "./shelf.module.sass";
 
 export const metadata: Metadata = {
 	title: "Shelf",
-	description: "Select Houdini tools and download them as a shelf package.",
+	description: "Select Python scripts and download them as a shelf package.",
 };
 
 export default async function ShelfPage() {
 	const tools = await db.tool.findMany({
-		where: { isPublished: true },
+		// Only Python scripts go on the shelf; VEX snippets are pasted into wrangles.
+		where: { isPublished: true, language: "PYTHON" },
 		// Same order as the shelf in the download (app/download/route.ts).
 		orderBy: [{ isPinned: "desc" }, { name: "asc" }],
 		select: {

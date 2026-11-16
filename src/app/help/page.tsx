@@ -9,7 +9,7 @@ import styles from "./help.module.sass";
 export const metadata: Metadata = {
 	title: "How to use these tools",
 	description:
-		"Putting the Python scripts on a Houdini shelf and the VEX snippets in a wrangle, by pasting or from the downloaded files.",
+		"Putting the Python scripts on a Houdini shelf, the VEX snippets in a wrangle, and installing the digital assets.",
 };
 
 // A Houdini menu item, button or tab name.
@@ -53,12 +53,14 @@ export default function HelpPage() {
 			<p className={styles.lead}>
 				Python scripts go on a shelf, VEX snippets go in a wrangle. Paste the
 				code for a quick setup, or save the downloaded file in your Houdini
-				folder to keep one copy you can update.
+				folder to keep one copy you can update. HDAs are installed as asset
+				files.
 			</p>
 			<nav className={styles.jump} aria-label="On this page">
 				{SHOW_BUNDLE && <a href="#bundle">Shelf package</a>}
 				<a href="#python">Python scripts</a>
 				<a href="#vex">VEX snippets</a>
+				<a href="#hda">HDAs</a>
 				<a href="#folder">Your Houdini folder</a>
 			</nav>
 
@@ -69,10 +71,10 @@ export default function HelpPage() {
 						<ol className={styles.steps}>
 							<li>
 								<a href="/download" download>
-									Download all tools
+									Download all Python scripts
 								</a>{" "}
 								(<code>arthur_tools.zip</code>), or{" "}
-								<Link href="/shelf">select tools</Link> to download.
+								<Link href="/shelf">select scripts</Link> to download.
 							</li>
 							<li>
 								Extract it into your <a href="#folder">Houdini folder</a>. It
@@ -86,10 +88,8 @@ export default function HelpPage() {
 							</li>
 						</ol>
 						<Note>
-							VEX buttons add a wrangle with the snippet to the network
-							you&apos;re in, wired to the selected node. To update, delete{" "}
-							<code>packages/arthur_tools</code> and extract a fresh download.
-							The same goes for changing which tools are on it.
+							To update, delete <code>packages/arthur_tools</code> and extract a
+							fresh download. The same goes for changing which tools are on it.
 						</Note>
 					</Method>
 				</section>
@@ -149,6 +149,37 @@ runpy.run_module("padded_netbox")`}
 				</Method>
 			</section>
 
+			<section id="hda" className={styles.hda}>
+				<h2>HDAs</h2>
+				<Method title="Install it">
+					<ol className={styles.steps}>
+						<li>Download the HDA file.</li>
+						<li>
+							In Houdini, <Ui>Assets</Ui> › <Ui>Install Asset Library</Ui>, pick
+							the file and click <Ui>Install</Ui>.
+						</li>
+						<li>
+							Add the node from the <Ui>Tab</Ui> menu in the network it was made
+							for.
+						</li>
+					</ol>
+					<Note>
+						The dialog&apos;s <Ui>Install Library To</Ui> option sets whether
+						only the current scene gets it or every scene does.
+					</Note>
+				</Method>
+				<Method title="From the file">
+					<ol className={styles.steps}>
+						<li>
+							Save the file in <code>otls</code> inside your{" "}
+							<a href="#folder">Houdini folder</a>.
+						</li>
+						<li>Restart Houdini.</li>
+					</ol>
+					<Note>To update the asset, replace the file.</Note>
+				</Method>
+			</section>
+
 			<section id="folder">
 				<h2>Your Houdini folder</h2>
 				<table className={styles.table}>
@@ -174,9 +205,9 @@ runpy.run_module("padded_netbox")`}
 					</tbody>
 				</table>
 				<Note>
-					Use your own version number. Create <code>scripts/python</code> or{" "}
-					<code>vex/include</code> if they don&apos;t exist yet, then restart
-					Houdini.
+					Use your own version number. Create <code>scripts/python</code>,{" "}
+					<code>vex/include</code> or <code>otls</code> if they don&apos;t exist
+					yet, then restart Houdini.
 				</Note>
 
 				<h3>Keeping tools somewhere else</h3>
@@ -188,8 +219,9 @@ runpy.run_module("padded_netbox")`}
 						<Snippet code={`{ "hpath": "D:/houdini/arthur_tools" }`} />
 					</li>
 					<li>
-						Put files in that folder&apos;s <code>scripts/python</code> and{" "}
-						<code>vex/include</code>, as you would in the Houdini folder.
+						Put files in that folder&apos;s <code>scripts/python</code>,{" "}
+						<code>vex/include</code> and <code>otls</code>, as you would in the
+						Houdini folder.
 					</li>
 					<li>Restart Houdini to load it.</li>
 				</ol>

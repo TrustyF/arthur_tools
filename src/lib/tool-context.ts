@@ -24,4 +24,6 @@ export const TOOL_CONTEXTS: Record<ToolLanguage, readonly string[]> = {
 		"Parameter expression",
 		"Startup script",
 	],
+	// The network an HDA's node lives in.
+	HDA: ["SOP", "OBJ", "DOP", "LOP", "VOP", "COP", "TOP", "ROP"],
 };

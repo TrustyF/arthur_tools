@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { diffCode } from "@/lib/code-diff";
+import { formatBytes } from "@/lib/tool-asset";
 import { formatVersionDate, getToolHistory } from "@/server/tools/tool-history";
 import styles from "./history.module.sass";
 
@@ -49,10 +50,18 @@ export default async function HistoryPage(
 									<span className={styles.current}>current</span>
 								)}
 							</span>
-							<span className={styles.stats}>
-								<span className={styles.statAdded}>+{row.diff.added}</span>
-								<span className={styles.statRemoved}>−{row.diff.removed}</span>
-							</span>
+							{tool.language === "HDA" ? (
+								<span className={styles.stats}>
+									{row.assetFileName && formatBytes(row.assetSize)}
+								</span>
+							) : (
+								<span className={styles.stats}>
+									<span className={styles.statAdded}>+{row.diff.added}</span>
+									<span className={styles.statRemoved}>
+										−{row.diff.removed}
+									</span>
+								</span>
+							)}
 							<time
 								className={styles.date}
 								dateTime={row.createDate.toISOString()}>

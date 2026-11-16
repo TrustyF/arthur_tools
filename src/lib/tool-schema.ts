@@ -23,17 +23,23 @@ export const toolInput = type({
 	slug: "0 < string <= 120",
 	summary: "string <= 300",
 	description: "string",
-	language: "'PYTHON' | 'VEX'",
+	language: "'PYTHON' | 'VEX' | 'HDA'",
 	context: "string <= 120",
 	houdiniVersion: "string <= 20",
-	code: "string > 0",
+	// Required for code tools only; HDAs are a file (checked in tool-actions.ts).
+	code: "string",
 	houdiniIcon,
 	previewUrl,
 	shortcut: "string <= 40",
 	tags: "string[]",
 	isPublished: "boolean",
 	isPinned: "boolean",
-});
+}).narrow(
+	(tool, ctx) =>
+		tool.language === "HDA" ||
+		tool.code !== "" ||
+		ctx.reject({ path: ["code"], expected: "not empty" }),
+);
 
 export type ToolInput = typeof toolInput.infer;
 
@@ -51,16 +57,17 @@ function field(formData: FormData, key: string): string {
 // to the name; tags are comma-separated and lowercased so filters match.
 export function toolFromFormData(formData: FormData): unknown {
 	const name = field(formData, "name");
+	const language = field(formData, "language");
 	return {
 		name,
 		slug: slugify(field(formData, "slug") || name),
 		summary: field(formData, "summary"),
 		description: field(formData, "description"),
-		language: field(formData, "language"),
+		language,
 		context: field(formData, "context"),
 		houdiniVersion: field(formData, "houdiniVersion"),
-		// Not trimmed: leading indentation is meaningful in Python.
-		code: raw(formData, "code").replace(/\s+$/, ""),
+		// Not trimmed: leading indentation is meaningful in Python. HDAs have none.
+		code: language === "HDA" ? "" : raw(formData, "code").replace(/\s+$/, ""),
 		houdiniIcon: field(formData, "houdiniIcon"),
 		previewUrl: field(formData, "previewUrl"),
 		shortcut: field(formData, "shortcut"),

@@ -11,18 +11,18 @@ import {
 import styles from "./form.module.sass";
 
 type LanguageContextFieldsProps = {
-	defaultLanguage: string;
+	// Held by tool-form.tsx, which swaps the Code box for a file field on HDAs.
+	language: ToolLanguage;
+	onLanguageChange: (language: ToolLanguage) => void;
 	defaultContext: string;
 };
 
 // Language and Context together: the context options follow the language.
 export function LanguageContextFields({
-	defaultLanguage,
+	language,
+	onLanguageChange,
 	defaultContext,
 }: LanguageContextFieldsProps) {
-	const [language, setLanguage] = useState<ToolLanguage>(
-		parseLanguage(defaultLanguage) ?? "VEX",
-	);
 	const [context, setContext] = useState(defaultContext);
 	const options = TOOL_CONTEXTS[language];
 	// A value from before the list (or from the other language) stays selectable.
@@ -37,7 +37,7 @@ export function LanguageContextFields({
 					value={language}
 					onChange={(e) => {
 						const next = parseLanguage(e.target.value) ?? "VEX";
-						setLanguage(next);
+						onLanguageChange(next);
 						if (!TOOL_CONTEXTS[next].includes(context)) setContext("");
 					}}>
 					{TOOL_LANGUAGES.map((lang) => (

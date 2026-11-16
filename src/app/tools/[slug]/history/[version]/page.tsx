@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AssetBlock } from "@/components/tools/asset-block";
 import { DiffView } from "@/components/tools/diff-view";
 import { toolFileName, LANGUAGE_HIGHLIGHT_ID } from "@/lib/tool-language";
 import { formatVersionDate, getToolHistory } from "@/server/tools/tool-history";
@@ -53,9 +54,11 @@ export default async function VersionPage(
 					<time dateTime={current.createDate.toISOString()}>
 						{formatVersionDate(current.createDate)}
 					</time>
-					{previous
-						? ` · compared with v${previous.number}`
-						: " · first version"}
+					{/* HDA files aren't compared, only offered for download. */}
+					{tool.language !== "HDA" &&
+						(previous
+							? ` · compared with v${previous.number}`
+							: " · first version")}
 				</p>
 				<nav className={styles.pager}>
 					{previous && (
@@ -69,12 +72,22 @@ export default async function VersionPage(
 				</nav>
 			</header>
 
-			<DiffView
-				oldCode={previous?.code ?? ""}
-				newCode={current.code}
-				lang={LANGUAGE_HIGHLIGHT_ID[tool.language]}
-				fileName={toolFileName(tool.slug, tool.language)}
-			/>
+			{tool.language === "HDA" ? (
+				current.assetFileName && (
+					<AssetBlock
+						fileName={current.assetFileName}
+						size={current.assetSize}
+						downloadHref={`/tools/${tool.slug}/raw?v=${current.number}`}
+					/>
+				)
+			) : (
+				<DiffView
+					oldCode={previous?.code ?? ""}
+					newCode={current.code}
+					lang={LANGUAGE_HIGHLIGHT_ID[tool.language]}
+					fileName={toolFileName(tool.slug, tool.language)}
+				/>
+			)}
 		</div>
 	);
 }

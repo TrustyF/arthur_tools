@@ -2,6 +2,7 @@
 enum ToolLanguage {
   PYTHON
   VEX
+  HDA
 }
 
 model Tool {
@@ -18,7 +19,13 @@ model Tool {
   context     String       @default("")
   // Oldest Houdini version it's known to work in, e.g. "20.5".
   houdiniVersion String    @default("")
+  // Empty for HDAs, whose content is the uploaded file below.
   code        String       @db.Text
+  // HDAs only: the uploaded file in media storage ("hda/<uuid>/<name>"), its
+  // original name and size in bytes. Empty/0 for code tools.
+  assetKey      String     @default("")
+  assetFileName String     @default("")
+  assetSize     Int        @default(0)
   // Houdini icon name as shelf tools write it, e.g. "SOP_null" — served from
   // public/houdini-icons (see src/scripts/import-houdini-icons.ts).
   houdiniIcon String       @default("")
@@ -59,7 +66,8 @@ model ToolStats {
   downloads Int    @default(0)
 }
 
-// A snapshot of a tool's code, written by saveTool whenever the code changes.
+// A snapshot of a tool's code, written by saveTool whenever the code changes,
+// or of an HDA's file, written whenever a new file is uploaded.
 model ToolVersion {
   id     String @id @default(cuid())
   toolId String
@@ -67,6 +75,11 @@ model ToolVersion {
   // 1, 2, 3, ... per tool, shown as v1, v2, ...
   number Int
   code   String @db.Text
+  // HDAs: this version's file. Files are never overwritten, so old versions
+  // stay downloadable.
+  assetKey      String @default("")
+  assetFileName String @default("")
+  assetSize     Int    @default(0)
   // Optional "commit message" from the edit form.
   note   String @default("")
 

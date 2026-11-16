@@ -2,7 +2,7 @@ import { db } from "@/server/db/client";
 import { BUNDLE_FILE_NAME, buildBundle } from "@/server/tools/tool-bundle";
 import { recordToolStat, shouldCount } from "@/server/tools/tool-stats";
 
-// Published tools as one Houdini package with its own shelf (tool-bundle.ts).
+// Published Python scripts as one Houdini package with its own shelf (tool-bundle.ts).
 // ?tools=slug-a,slug-b (from /shelf) limits it to those tools, in that order.
 export async function GET(req: Request) {
 	const picked = new URL(req.url).searchParams.get("tools");
@@ -15,7 +15,11 @@ export async function GET(req: Request) {
 	}
 
 	const found = await db.tool.findMany({
-		where: { isPublished: true, ...(slugs ? { slug: { in: slugs } } : {}) },
+		where: {
+			isPublished: true,
+			language: "PYTHON",
+			...(slugs ? { slug: { in: slugs } } : {}),
+		},
 		// Order for the full download: pinned first, then alphabetical.
 		orderBy: [{ isPinned: "desc" }, { name: "asc" }],
 		select: {

@@ -42,12 +42,29 @@
     &:hover
       color: var(--foreground)
 
-  .active
-    color: var(--brand)
-
 .tagFilter
   font-size: 0.85rem
   color: var(--accent3)
+
+.group + .group
+  margin-top: 2.5rem
+
+.group > h2
+  display: flex
+  align-items: center
+  gap: 0.5rem
+  font-size: 1.2rem
+  font-weight: 500
+  margin-bottom: 0.75rem
+
+.python
+  color: var(--lang-python)
+
+.vex
+  color: var(--lang-vex)
+
+.hda
+  color: var(--lang-hda)
 
 // Pulled out by the rows' padding so their text lines up with the heading.
 .list
